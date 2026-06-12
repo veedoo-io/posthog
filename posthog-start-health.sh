@@ -1,4 +1,11 @@
-export DOMAIN=localhost
+#!/bin/sh
+
+# Зчитуємо DOMAIN з файлу .env перед використанням
+if [ -f .env ]; then
+    export DOMAIN=$(grep '^DOMAIN=' .env | cut -d '=' -f 2)
+fi
+
+export DOMAIN="${DOMAIN:-localhost:8088}"
 
 echo "Starting the stack!"
 
@@ -31,7 +38,7 @@ if [ -z "$SKIP_HEALTH_CHECK" ]; then
     # Track the start time to measure actual wait time
     HEALTH_START=$(date +%s)
     # shellcheck disable=SC2016 # Single quotes intentional - %{http_code} is curl format string, not shell variable
-    if timeout 600 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost/_health)" != "200" ]]; do sleep 5; done'; then
+    if timeout 600 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://'${DOMAIN}'/_health)" != "200" ]]; do sleep 5; done'; then
         HEALTH_END=$(date +%s)
         HEALTH_DURATION=$((HEALTH_END - HEALTH_START))
         echo "⌛️ PostHog looks up! (after ${HEALTH_DURATION} seconds)"
