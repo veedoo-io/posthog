@@ -1,4 +1,9 @@
-export DOMAIN=localhost
+# Зчитуємо DOMAIN з файлу .env перед використанням
+if [ -f .env ]; then
+    export DOMAIN=$(grep '^DOMAIN=' .env | cut -d '=' -f 2)
+fi
+
+export DOMAIN="${DOMAIN:-localhost:8088}"
 
 echo "Starting the stack!"
 
