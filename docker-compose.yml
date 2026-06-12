@@ -89,9 +89,14 @@ services:
             service: worker
         logging: *default-logging
         volumes:
-            - ./ee:/code/ee
-            - ./posthog:/code/posthog
-            - ./products:/code/products
+            - ./ee/hogai:/code/ee/hogai
+            - ./ee/settings.py:/code/ee/settings.py
+            - ./posthog/temporal:/code/posthog/temporal
+            - ./products/ai_observability:/code/products/ai_observability
+            - ./products/signals:/code/products/signals
+            - ./products/tasks:/code/products/tasks
+            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
+            - ./tools/pr-approval-agent:/code/tools/pr-approval-agent
         environment:
             CYCLOTRON_DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
             CYCLOTRON_NODE_DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
@@ -146,11 +151,14 @@ services:
         logging: *default-logging
         volumes:
             - ./compose:/compose
-            - ./bin/migrate:/code/bin/migrate
-            - ./rust/bin:/code/rust/bin
-            - ./ee:/code/ee
-            - ./posthog:/code/posthog
-            - ./products:/code/products
+            - ./ee/hogai:/code/ee/hogai
+            - ./ee/settings.py:/code/ee/settings.py
+            - ./posthog/temporal:/code/posthog/temporal
+            - ./products/ai_observability:/code/products/ai_observability
+            - ./products/signals:/code/products/signals
+            - ./products/tasks:/code/products/tasks
+            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
+            - ./tools/pr-approval-agent:/code/tools/pr-approval-agent
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
             CYCLOTRON_DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
@@ -235,6 +243,9 @@ services:
             OTEL_EXPORTER_OTLP_ENDPOINT: ''
         volumes:
             - ./share:/share
+            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
+            - ./products/signals:/code/products/signals
+            - ./products/tasks:/code/products/tasks
         depends_on:
             - db
             - redis7
@@ -273,6 +284,9 @@ services:
             SESSION_RECORDING_V2_S3_ENDPOINT: '${SESSION_RECORDING_V2_S3_ENDPOINT:-https://s3.eu-west-2.amazonaws.com}'
             SESSION_RECORDING_V2_S3_TIMEOUT_MS: 120000
             ENCRYPTION_SALT_KEYS: $ENCRYPTION_SALT_KEYS
+        volumes:
+            - ./products/signals:/code/products/signals
+            - ./products/tasks:/code/products/tasks
         depends_on:
             - db
             - redis7
@@ -470,9 +484,14 @@ services:
         logging: *default-logging
         volumes:
             - ./compose:/compose
-            - ./ee:/code/ee
-            - ./posthog:/code/posthog
-            - ./products:/code/products
+            - ./ee/hogai:/code/ee/hogai
+            - ./ee/settings.py:/code/ee/settings.py
+            - ./posthog/temporal:/code/posthog/temporal
+            - ./products/ai_observability:/code/products/ai_observability
+            - ./products/signals:/code/products/signals
+            - ./products/tasks:/code/products/tasks
+            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
+            - ./tools/pr-approval-agent:/code/tools/pr-approval-agent
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
             SITE_URL: https://$DOMAIN
@@ -496,9 +515,14 @@ services:
             service: temporal-django-worker
         volumes:
             - ./compose:/compose
-            - ./ee:/code/ee
-            - ./posthog:/code/posthog
-            - ./products:/code/products
+            - ./ee/hogai:/code/ee/hogai
+            - ./ee/settings.py:/code/ee/settings.py
+            - ./posthog/temporal:/code/posthog/temporal
+            - ./products/ai_observability:/code/products/ai_observability
+            - ./products/signals:/code/products/signals
+            - ./products/tasks:/code/products/tasks
+            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
+            - ./tools/pr-approval-agent:/code/tools/pr-approval-agent
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
             SITE_URL: https://$DOMAIN
@@ -690,6 +714,8 @@ services:
         logging: *default-logging
         volumes:
             - ./share:/share
+            - ./products/signals:/code/products/signals
+            - ./products/tasks:/code/products/tasks
         environment:
             KAFKA_HOSTS: 'kafka:9092'
             OBJECT_STORAGE_REGION: ${OBJECT_STORAGE_REGION:-eu-west-2}
