@@ -342,7 +342,7 @@ services:
         logging: *default-logging
         ports:
             - '8088:80'
-            - '443:443'
+            - '4443:443'
         volumes:
             - caddy-data:/data
             - caddy-config:/config
