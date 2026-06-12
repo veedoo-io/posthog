@@ -21,7 +21,7 @@ from products.signals.backend.facade.api import emit_signal
 
 logger = structlog.get_logger(__name__)
 
-LLM_MODEL = "claude-sonnet-4-5"
+LLM_MODEL = "claude-haiku-4-5"
 # Concurrent LLM calls limit for actionability/summarization checks
 LLM_CONCURRENCY_LIMIT = 20
 # Concurrent workflow spawns for signal emission

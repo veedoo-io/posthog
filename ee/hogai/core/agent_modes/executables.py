@@ -271,11 +271,12 @@ class AgentExecutable(BaseAgentLoopRootExecutable):
         }
 
     def _get_model(self, state: AssistantState, tools: list["MaxTool"]):
-        model_name = "claude-sonnet-4-6"
+        model_name = getattr(settings, "HOGAI_ANTHROPIC_MODEL", "claude-haiku-4-5")
         if self._has_legacy_summarize_sessions_messages(state.messages):
-            model_name = "claude-sonnet-4-5"
+            model_name = "claude-haiku-4-5"
 
         is_sonnet_4_5 = model_name == "claude-sonnet-4-5"
+        is_haiku = "haiku" in model_name.lower()
 
         gateway_kwargs = self._get_gateway_kwargs()
         is_routing_through_llm_gateway = bool(gateway_kwargs)
@@ -294,7 +295,8 @@ class AgentExecutable(BaseAgentLoopRootExecutable):
             thinking=self.THINKING_CONFIG if not is_sonnet_4_5 else {"type": "enabled", "budget_tokens": 1024},
             # langchain-anthropic 0.3.x doesn't have a first-class effort field;
             # forward it via model_kwargs so the Anthropic API receives output_config.
-            model_kwargs={"output_config": {"effort": "medium"}} if not is_sonnet_4_5 else {},
+            # Haiku doesn't support effort parameter, so skip it for haiku models.
+            model_kwargs={"output_config": {"effort": "medium"}} if not is_sonnet_4_5 and not is_haiku else {},
             conversation_start_dt=state.start_dt,
             billable=True,
             bypass_proxy=is_routing_through_llm_gateway,

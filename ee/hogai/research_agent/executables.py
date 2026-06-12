@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from posthog.schema import AgentMode
 
 from ee.hogai.core.plan_mode import PlanModeExecutable, PlanModeToolsExecutable
@@ -24,7 +26,7 @@ class ResearchAgentExecutable(PlanModeExecutable):
 
     def _get_model(self, state: AssistantState, tools: list["MaxTool"]):
         is_research_mode = state.supermode == AgentMode.RESEARCH
-        model_name = "claude-opus-4-6" if is_research_mode else "claude-sonnet-4-6"
+        model_name = "claude-haiku-4-5" if is_research_mode else getattr(settings, "HOGAI_ANTHROPIC_MODEL", "claude-haiku-4-5")
 
         base_model = MaxChatAnthropic(
             model=model_name,

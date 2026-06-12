@@ -91,6 +91,7 @@ TEMPORAL_TASK_TIMEOUT_MINUTES = PARALLEL_ASSET_GENERATION_MAX_TIMEOUT_MINUTES * 
 
 # Assistant
 ANTHROPIC_API_KEY = get_from_env("ANTHROPIC_API_KEY", "")
+HOGAI_ANTHROPIC_MODEL = get_from_env("HOGAI_ANTHROPIC_MODEL", "claude-haiku-4-5")
 OPENAI_API_KEY = get_from_env("OPENAI_API_KEY", "")
 OPENAI_BASE_URL = get_from_env("OPENAI_BASE_URL", "https://api.openai.com/v1")
 

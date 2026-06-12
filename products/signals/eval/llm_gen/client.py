@@ -43,7 +43,7 @@ async def generate_canonical_signals(
     Reuses `call_llm` from products.signals.backend.temporal.llm so we get the
     same retry-on-validation-failure behavior the rest of the pipeline uses.
     Model is controlled by the SIGNAL_MATCHING_LLM_MODEL env var (default
-    claude-sonnet-4-5). LLM cost is attributed to team_id via the gateway.
+    claude-haiku-4-5). LLM cost is attributed to team_id via the gateway.
     """
     batch = await call_llm(
         team_id=team_id,

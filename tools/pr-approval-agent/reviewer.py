@@ -33,7 +33,7 @@ try:
 except ImportError:
     _POSTHOG_AI_AVAILABLE = False
 
-MODEL = "claude-sonnet-4-6"
+MODEL = os.environ.get("HOGAI_ANTHROPIC_MODEL", "claude-haiku-4-5")
 
 
 _CONTROL_CHARS_RE = re.compile(r"[^\x20-\x7E\n\t]")
