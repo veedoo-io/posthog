@@ -2,6 +2,8 @@ import re
 from abc import abstractmethod
 from collections.abc import Sequence
 
+from django.conf import settings
+
 from langchain_core.messages import BaseMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -61,9 +63,10 @@ class AnthropicConversationSummarizer(ConversationSummarizer):
         self._extend_context_window = extend_context_window
 
     def _get_model(self):
-        # Haiku has 200k token limit. Sonnet has 1M token limit (GA on claude-sonnet-4-6).
+        # Haiku has 200k token limit. Sonnet has 1M token limit (GA on claude-haiku-4-5).
+        model_name = getattr(settings, "HOGAI_ANTHROPIC_MODEL", "claude-haiku-4-5")
         return MaxChatAnthropic(
-            model="claude-sonnet-4-6" if self._extend_context_window else "claude-haiku-4-5",
+            model=model_name if self._extend_context_window else "claude-haiku-4-5",
             streaming=False,
             stream_usage=False,
             max_tokens=8192,

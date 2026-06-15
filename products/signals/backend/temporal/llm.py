@@ -12,7 +12,7 @@ from posthog.llm.gateway_client import get_async_anthropic_gateway_client
 
 logger = structlog.get_logger(__name__)
 
-MATCHING_MODEL = os.getenv("SIGNAL_MATCHING_LLM_MODEL", "claude-sonnet-4-5")
+MATCHING_MODEL = os.getenv("SIGNAL_MATCHING_LLM_MODEL", "claude-haiku-4-5")
 
 # Models that support Anthropic extended thinking. Keep in sync with the models we actually use.
 ANTHROPIC_THINKING_MODELS = {

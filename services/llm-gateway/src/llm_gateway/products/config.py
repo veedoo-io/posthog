@@ -43,7 +43,6 @@ _POSTHOG_CODE_AGENT_MODELS: Final[frozenset[str]] = frozenset(
         "claude-opus-4-7",
         "claude-opus-4-8",
         "claude-sonnet-4-5",
-        "claude-sonnet-4-6",
         "claude-haiku-4-5",
         "gpt-5.5",
         "gpt-5.4",
