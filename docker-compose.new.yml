@@ -183,6 +183,10 @@ services:
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
             IS_BEHIND_PROXY: 'True'
             TRUST_ALL_PROXIES: 'True'
+            SECURE_COOKIES: 'False'
+            CSRF_COOKIE_SECURE: 'False'
+            SESSION_COOKIE_SECURE: 'False'
+            DISABLE_SECURE_SSL_REDIRECT: 'True'
         depends_on:
             - db
             - redis7
