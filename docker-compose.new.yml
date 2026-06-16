@@ -119,6 +119,8 @@ services:
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            IS_BEHIND_PROXY: 'True'
+            TRUST_ALL_PROXIES: 'True'
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         depends_on:
             db:
@@ -179,6 +181,8 @@ services:
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            IS_BEHIND_PROXY: 'True'
+            TRUST_ALL_PROXIES: 'True'
         depends_on:
             - db
             - redis7
@@ -328,6 +332,8 @@ services:
         environment:
             CADDY_TLS_BLOCK: $TLS_BLOCK
             CADDY_HOST: '$DOMAIN, http://, https://'
+            IS_BEHIND_PROXY: 'True'
+            TRUST_ALL_PROXIES: 'True'
         depends_on:
             - web
             - livestream
