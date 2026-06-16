@@ -100,7 +100,7 @@ services:
             - ./services/llm-gateway/src/llm_gateway/bedrock.py:/code/services/llm-gateway/src/llm_gateway/bedrock.py
             - ./tools/pr-approval-agent/reviewer.py:/code/tools/pr-approval-agent/reviewer.py
         environment:
-            SITE_URL: $SITE_URL
+            SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
             OBJECT_STORAGE_ACCESS_KEY_ID: 'object_storage_root_user'
             OBJECT_STORAGE_SECRET_ACCESS_KEY: 'object_storage_root_password'
@@ -119,8 +119,6 @@ services:
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-            IS_BEHIND_PROXY: 'True'
-            TRUST_ALL_PROXIES: 'True'
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         depends_on:
             db:
@@ -143,6 +141,7 @@ services:
         logging: *default-logging
         volumes:
             - ./compose:/compose
+            - ./compose:/code/compose
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
             - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
             - ./ee/settings.py:/code/ee/settings.py
@@ -157,7 +156,7 @@ services:
             - ./tools/pr-approval-agent/reviewer.py:/code/tools/pr-approval-agent/reviewer.py
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
-            SITE_URL: $SITE_URL
+            SITE_URL: https://$DOMAIN
             LIVESTREAM_HOST: 'https://${DOMAIN}/livestream'
             SECRET_KEY: $POSTHOG_SECRET
             OBJECT_STORAGE_ACCESS_KEY_ID: 'object_storage_root_user'
@@ -183,10 +182,6 @@ services:
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
             IS_BEHIND_PROXY: 'True'
             TRUST_ALL_PROXIES: 'True'
-            SECURE_COOKIES: 'False'
-            CSRF_COOKIE_SECURE: 'False'
-            SESSION_COOKIE_SECURE: 'False'
-            DISABLE_SECURE_SSL_REDIRECT: 'True'
         depends_on:
             - db
             - redis7
@@ -203,7 +198,7 @@ services:
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
         logging: *default-logging
         environment:
-            SITE_URL: $SITE_URL
+            SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
             OBJECT_STORAGE_ACCESS_KEY_ID: 'object_storage_root_user'
             OBJECT_STORAGE_SECRET_ACCESS_KEY: 'object_storage_root_password'
@@ -328,17 +323,14 @@ services:
             service: proxy
         logging: *default-logging
         ports:
-            - '8000:80'
+            - '8009:80'
             - '4443:443'
         volumes:
             - caddy-data:/data
             - caddy-config:/config
         environment:
             CADDY_TLS_BLOCK: $TLS_BLOCK
-            CADDY_HOST: ${CADDY_HOST}
-            IS_BEHIND_PROXY: 'True'
-            TRUST_ALL_PROXIES: 'True'
-            DISABLE_SECURE_SSL_REDIRECT: 'True'
+            CADDY_HOST: '$DOMAIN, http://, https://'
         depends_on:
             - web
             - livestream
@@ -374,12 +366,12 @@ services:
             - seaweedfs:/data
         healthcheck:
             test:
-                [
-                    'CMD',
-                    'sh',
-                    '-c',
-                    "echo 's3.bucket.list' | /usr/bin/weed shell -master=localhost:9333 2>&1 | grep -q posthog",
-                ]
+              [
+                  'CMD',
+                  'sh',
+                  '-c',
+                  "echo 's3.bucket.list' | /usr/bin/weed shell -master=localhost:9333 2>&1 | grep -q posthog",
+              ]
             interval: 5s
             timeout: 10s
             retries: 30
@@ -392,7 +384,7 @@ services:
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         logging: *default-logging
         environment:
-            SITE_URL: $SITE_URL
+            SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
             SKIP_ASYNC_MIGRATIONS_SETUP: 0
 
@@ -442,7 +434,7 @@ services:
             - ./compose:/compose
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
-            SITE_URL: $SITE_URL
+            SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
@@ -456,40 +448,45 @@ services:
             - seaweedfs
             - temporal
 
-#    # Max AI worker - requires OPENAI_API_KEY to be set
-#    # ANTHROPIC_API_KEY is optional (only for /ticket command)
-#    # See: https://posthog.com/docs/self-host/deploy/hobby#max-ai-setup
-#    temporal-django-worker-max-ai:
-#        command: /compose/temporal-django-worker
-#        extends:
-#            file: docker-compose.base.yml
-#            service: temporal-django-worker
-#        volumes:
-#            - ./compose:/compose
-#            - ./ee/hogai:/code/ee/hogai
-#            - ./ee/settings.py:/code/ee/settings.py
-#            - ./posthog/temporal:/code/posthog/temporal
-#            - ./products/ai_observability:/code/products/ai_observability
-#            - ./products/signals:/code/products/signals
-#            - ./products/tasks:/code/products/tasks
-#            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
-#            - ./tools/pr-approval-agent:/code/tools/pr-approval-agent
-#        image: $REGISTRY_URL:$POSTHOG_APP_TAG
-#        environment:
-#            SITE_URL: https://$DOMAIN
-#            SECRET_KEY: $POSTHOG_SECRET
-#            TEMPORAL_TASK_QUEUE: max-ai-task-queue
-#            OPENAI_API_KEY: ${OPENAI_API_KEY}
-#            ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-#            HOGAI_ANTHROPIC_MODEL: ${HOGAI_ANTHROPIC_MODEL}
-#        depends_on:
-#            - db
-#            - redis7
-#            - clickhouse
-#            - kafka
-#            - objectstorage
-#            - seaweedfs
-#            - temporal
+    # Max AI worker - requires OPENAI_API_KEY to be set
+    # ANTHROPIC_API_KEY is optional (only for /ticket command)
+    # See: https://posthog.com/docs/self-host/deploy/hobby#max-ai-setup
+    temporal-django-worker-max-ai:
+        command: /compose/temporal-django-worker
+        extends:
+            file: docker-compose.base.yml
+            service: temporal-django-worker
+        volumes:
+            - ./compose:/compose
+            - ./compose:/code/compose
+            - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
+            - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
+            - ./ee/settings.py:/code/ee/settings.py
+            - ./posthog/temporal/ai/anomaly_investigation/runner.py:/code/posthog/temporal/ai/anomaly_investigation/runner.py
+            - ./posthog/temporal/data_imports/signals/pipeline.py:/code/posthog/temporal/data_imports/signals/pipeline.py
+            - ./products/ai_observability/backend/llm/providers/anthropic.py:/code/products/ai_observability/backend/llm/providers/anthropic.py
+            - ./products/signals/backend/temporal/llm.py:/code/products/signals/backend/temporal/llm.py
+            - ./products/signals/eval/llm_gen/client.py:/code/products/signals/eval/llm_gen/client.py
+            - ./products/tasks/backend/temporal/process_task/utils.py:/code/products/tasks/backend/temporal/process_task/utils.py
+            - ./services/llm-gateway/src/llm_gateway/products/config.py:/code/services/llm-gateway/src/llm_gateway/products/config.py
+            - ./services/llm-gateway/src/llm_gateway/bedrock.py:/code/services/llm-gateway/src/llm_gateway/bedrock.py
+            - ./tools/pr-approval-agent/reviewer.py:/code/tools/pr-approval-agent/reviewer.py
+        image: $REGISTRY_URL:$POSTHOG_APP_TAG
+        environment:
+            SITE_URL: https://$DOMAIN
+            SECRET_KEY: $POSTHOG_SECRET
+            TEMPORAL_TASK_QUEUE: max-ai-task-queue
+            OPENAI_API_KEY: ${OPENAI_API_KEY}
+            ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+            HOGAI_ANTHROPIC_MODEL: ${HOGAI_ANTHROPIC_MODEL}
+        depends_on:
+            - db
+            - redis7
+            - clickhouse
+            - kafka
+            - objectstorage
+            - seaweedfs
+            - temporal
 
     cyclotron-janitor:
         extends:
