@@ -87,14 +87,18 @@ services:
             service: worker
         logging: *default-logging
         volumes:
-            - ./ee/hogai:/code/ee/hogai
+            - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
+            - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
             - ./ee/settings.py:/code/ee/settings.py
-            - ./posthog/temporal:/code/posthog/temporal
-            - ./products/ai_observability:/code/products/ai_observability
-            - ./products/signals:/code/products/signals
-            - ./products/tasks:/code/products/tasks
-            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
-            - ./tools/pr-approval-agent:/code/tools/pr-approval-agent
+            - ./posthog/temporal/ai/anomaly_investigation/runner.py:/code/posthog/temporal/ai/anomaly_investigation/runner.py
+            - ./posthog/temporal/data_imports/signals/pipeline.py:/code/posthog/temporal/data_imports/signals/pipeline.py
+            - ./products/ai_observability/backend/llm/providers/anthropic.py:/code/products/ai_observability/backend/llm/providers/anthropic.py
+            - ./products/signals/backend/temporal/llm.py:/code/products/signals/backend/temporal/llm.py
+            - ./products/signals/eval/llm_gen/client.py:/code/products/signals/eval/llm_gen/client.py
+            - ./products/tasks/backend/temporal/process_task/utils.py:/code/products/tasks/backend/temporal/process_task/utils.py
+            - ./services/llm-gateway/src/llm_gateway/products/config.py:/code/services/llm-gateway/src/llm_gateway/products/config.py
+            - ./services/llm-gateway/src/llm_gateway/bedrock.py:/code/services/llm-gateway/src/llm_gateway/bedrock.py
+            - ./tools/pr-approval-agent/reviewer.py:/code/tools/pr-approval-agent/reviewer.py
         environment:
             SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
@@ -137,14 +141,18 @@ services:
         logging: *default-logging
         volumes:
             - ./compose:/compose
-            - ./ee/hogai:/code/ee/hogai
+            - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
+            - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
             - ./ee/settings.py:/code/ee/settings.py
-            - ./posthog/temporal:/code/posthog/temporal
-            - ./products/ai_observability:/code/products/ai_observability
-            - ./products/signals:/code/products/signals
-            - ./products/tasks:/code/products/tasks
-            - ./services/llm-gateway/src/llm_gateway:/code/services/llm-gateway
-            - ./tools/pr-approval-agent:/code/tools/pr-approval-agent
+            - ./posthog/temporal/ai/anomaly_investigation/runner.py:/code/posthog/temporal/ai/anomaly_investigation/runner.py
+            - ./posthog/temporal/data_imports/signals/pipeline.py:/code/posthog/temporal/data_imports/signals/pipeline.py
+            - ./products/ai_observability/backend/llm/providers/anthropic.py:/code/products/ai_observability/backend/llm/providers/anthropic.py
+            - ./products/signals/backend/temporal/llm.py:/code/products/signals/backend/temporal/llm.py
+            - ./products/signals/eval/llm_gen/client.py:/code/products/signals/eval/llm_gen/client.py
+            - ./products/tasks/backend/temporal/process_task/utils.py:/code/products/tasks/backend/temporal/process_task/utils.py
+            - ./services/llm-gateway/src/llm_gateway/products/config.py:/code/services/llm-gateway/src/llm_gateway/products/config.py
+            - ./services/llm-gateway/src/llm_gateway/bedrock.py:/code/services/llm-gateway/src/llm_gateway/bedrock.py
+            - ./tools/pr-approval-agent/reviewer.py:/code/tools/pr-approval-agent/reviewer.py
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
             SITE_URL: https://$DOMAIN
