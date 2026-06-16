@@ -100,7 +100,7 @@ services:
             - ./services/llm-gateway/src/llm_gateway/bedrock.py:/code/services/llm-gateway/src/llm_gateway/bedrock.py
             - ./tools/pr-approval-agent/reviewer.py:/code/tools/pr-approval-agent/reviewer.py
         environment:
-            SITE_URL: https://$DOMAIN
+            SITE_URL: $SITE_URL
             SECRET_KEY: $POSTHOG_SECRET
             OBJECT_STORAGE_ACCESS_KEY_ID: 'object_storage_root_user'
             OBJECT_STORAGE_SECRET_ACCESS_KEY: 'object_storage_root_password'
@@ -157,13 +157,7 @@ services:
             - ./tools/pr-approval-agent/reviewer.py:/code/tools/pr-approval-agent/reviewer.py
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
-            SITE_URL: https://$DOMAIN
-            # Дозволяємо Django приймати запити з цієї адреси
-            ALLOWED_HOSTS: '167.233.29.171,localhost,127.0.0.1'
-
-            # Довірені джерела для захисту від CSRF атак
-            CSRF_TRUSTED_ORIGINS: 'http://167.233.29.171:8000,http://localhost:8000'
-
+            SITE_URL: $SITE_URL
             LIVESTREAM_HOST: 'https://${DOMAIN}/livestream'
             SECRET_KEY: $POSTHOG_SECRET
             OBJECT_STORAGE_ACCESS_KEY_ID: 'object_storage_root_user'
@@ -209,7 +203,7 @@ services:
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
         logging: *default-logging
         environment:
-            SITE_URL: https://$DOMAIN
+            SITE_URL: $SITE_URL
             SECRET_KEY: $POSTHOG_SECRET
             OBJECT_STORAGE_ACCESS_KEY_ID: 'object_storage_root_user'
             OBJECT_STORAGE_SECRET_ACCESS_KEY: 'object_storage_root_password'
@@ -341,9 +335,10 @@ services:
             - caddy-config:/config
         environment:
             CADDY_TLS_BLOCK: $TLS_BLOCK
-            CADDY_HOST: '$DOMAIN, http://, https://'
+            CADDY_HOST: ${CADDY_HOST}
             IS_BEHIND_PROXY: 'True'
             TRUST_ALL_PROXIES: 'True'
+            DISABLE_SECURE_SSL_REDIRECT: 'True'
         depends_on:
             - web
             - livestream
@@ -397,7 +392,7 @@ services:
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         logging: *default-logging
         environment:
-            SITE_URL: https://$DOMAIN
+            SITE_URL: $SITE_URL
             SECRET_KEY: $POSTHOG_SECRET
             SKIP_ASYNC_MIGRATIONS_SETUP: 0
 
@@ -447,7 +442,7 @@ services:
             - ./compose:/compose
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         environment:
-            SITE_URL: https://$DOMAIN
+            SITE_URL: $SITE_URL
             SECRET_KEY: $POSTHOG_SECRET
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
