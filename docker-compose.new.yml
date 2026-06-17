@@ -21,6 +21,9 @@ services:
             service: db
         image: ${DOCKER_REGISTRY_PREFIX:-}postgres:15.12-alpine
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
         volumes:
             - postgres-data:/var/lib/postgresql/data
 
@@ -29,6 +32,9 @@ services:
             file: docker-compose.base.yml
             service: redis7
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
         volumes:
             - redis7-data:/data
 
@@ -45,6 +51,9 @@ services:
         depends_on:
             - kafka
             - zookeeper
+        networks:
+            - default
+            - dokploy-network
         volumes:
             - ./posthog/idl:/idl
             - ./docker/clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
@@ -74,6 +83,9 @@ services:
         logging: *default-logging
         depends_on:
             - zookeeper
+        networks:
+            - default
+            - dokploy-network
         environment:
             KAFKA_LOG_RETENTION_MS: 3600000
             KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
@@ -86,6 +98,9 @@ services:
             file: docker-compose.base.yml
             service: worker
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
         volumes:
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
             - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
@@ -139,6 +154,15 @@ services:
             service: web
         command: /compose/start
         logging: *default-logging
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.posthog.rule=Host(`posthog.euvsd.info`)"
+            - "traefik.http.routers.posthog.entrypoints=websecure"
+            - "traefik.http.routers.posthog.tls.certresolver=letsencrypt"
+            - "traefik.http.services.posthog.loadbalancer.server.port=8000"
+            - "traefik.http.routers.posthog-http.rule=Host(`posthog.euvsd.info`)"
+            - "traefik.http.routers.posthog-http.entrypoints=web"
+            - "traefik.http.routers.posthog-http.middlewares=redirect-to-https@file"
         networks:
             - default
             - dokploy-network
@@ -201,6 +225,9 @@ services:
             service: plugins
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
         environment:
             SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
@@ -326,15 +353,6 @@ services:
             file: docker-compose.base.yml
             service: proxy
         logging: *default-logging
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.posthog.rule=Host(`posthog.euvsd.info`)"
-            - "traefik.http.routers.posthog.entrypoints=websecure"
-            - "traefik.http.routers.posthog.tls.certresolver=letsencrypt"
-            - "traefik.http.services.posthog.loadbalancer.server.port=80"
-            - "traefik.http.routers.posthog-http.rule=Host(`posthog.euvsd.info`)"
-            - "traefik.http.routers.posthog-http.entrypoints=web"
-            - "traefik.http.routers.posthog-http.middlewares=redirect-to-https@file"
         networks:
             - default
             - dokploy-network
