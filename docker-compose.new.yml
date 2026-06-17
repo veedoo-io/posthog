@@ -139,6 +139,9 @@ services:
             service: web
         command: /compose/start
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
         volumes:
             - ./compose:/compose
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
@@ -520,6 +523,9 @@ services:
             file: docker-compose.base.yml
             service: capture
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
 
     replay-capture:
         build:
@@ -582,6 +588,9 @@ services:
             file: docker-compose.base.yml
             service: feature-flags
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
         depends_on:
             - db
             - redis7
@@ -719,6 +728,11 @@ services:
             /entrypoint ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
             "
         command: ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
+
+networks:
+    default:
+    dokploy-network:
+        external: true
 
 volumes:
     zookeeper-data:
