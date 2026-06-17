@@ -283,6 +283,8 @@ services:
             SESSION_RECORDING_V2_S3_SECRET_ACCESS_KEY: 'any'
             SESSION_RECORDING_V2_S3_TIMEOUT_MS: 120000
             SESSION_RECORDING_V2_S3_ENDPOINT: http://seaweedfs:8333
+            SESSION_RECORDING_V2_S3_BUCKET: posthog
+            SESSION_RECORDING_V2_S3_REGION: 'any'
             ENCRYPTION_SALT_KEYS: $ENCRYPTION_SALT_KEYS
         depends_on:
             - db
