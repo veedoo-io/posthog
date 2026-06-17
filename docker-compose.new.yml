@@ -424,8 +424,8 @@ services:
             - default
             - dokploy-network
         ports:
-            - '127.0.0.1:8333:8333' # S3 API
-            - '127.0.0.1:9333:9333' # Master server
+            - '8333:8333' # S3 API
+            - '9333:9333' # Master server
         volumes:
             - seaweedfs:/data
         healthcheck:
