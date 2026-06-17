@@ -12,14 +12,12 @@ mkdir -p "$BACKUP_DIR"
 
 echo "Started ClickHouse backup at $(date)"
 
-# Переходимо в папку бекапів
-cd "$BACKUP_DIR"
-
 # Виконання бекапу бази 'default'
-# Використовуємо відносний шлях, оскільки ми вже в дозволеній директорії
-if clickhouse-client --query "BACKUP DATABASE default TO File('${BACKUP_NAME}/')"; then
+if clickhouse-client --query "BACKUP DATABASE default TO File('${BACKUP_DIR}/${BACKUP_NAME}')"; then
     echo "✅ ClickHouse backup created at: ${BACKUP_PATH}"
     
+    # Переходимо в папку бекапів для стискання
+    cd "$BACKUP_DIR"
     # Стискаємо в архів
     tar -czf "${BACKUP_NAME}.tar.gz" "${BACKUP_NAME}" && rm -rf "${BACKUP_NAME}"
     echo "✅ Backup compressed to: ${BACKUP_NAME}.tar.gz"
