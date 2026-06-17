@@ -359,7 +359,7 @@ services:
             service: proxy
         logging: *default-logging
         ports:
-            - '8088:80'
+            - '80:80'
             - '4443:443'
         volumes:
             - caddy-data:/data

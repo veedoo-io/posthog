@@ -1,5 +1,8 @@
 <clickhouse>
     <tcp_port>9000</tcp_port>
+    <max_server_memory_usage>3000000000</max_server_memory_usage>
+<!--    <max_thread_pool_size>16</max_thread_pool_size>-->
+<!--    <max_free_entries_in_pool>16</max_free_entries_in_pool>-->
 
     <remote_servers>
         <posthog>
