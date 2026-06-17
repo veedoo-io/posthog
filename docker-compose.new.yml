@@ -861,10 +861,11 @@ services:
         restart: unless-stopped
         entrypoint: |
             sh -c "
-            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data backups clickhouse-backups; do
-              chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$$dir &&
-              chmod -R 777 /home/${SFTP_USER:-sftp_user}/$$dir;
+            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data backups; do
+              chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$dir &&
+              chmod -R 777 /home/${SFTP_USER:-sftp_user}/$dir;
             done &&
+            chmod -R 777 /home/${SFTP_USER:-sftp_user}/clickhouse-backups &&
             /entrypoint ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
             "
         command: ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
