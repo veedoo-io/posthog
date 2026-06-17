@@ -61,11 +61,12 @@ services:
             - ./docker/clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
             - ./docker/clickhouse/config.xml:/etc/clickhouse-server/config.xml
             - ./docker/clickhouse/config.d/default.xml:/etc/clickhouse-server/config.d/default.xml
+            - ./docker/clickhouse/config.d/backups.xml:/etc/clickhouse-server/config.d/backups.xml
             - ./docker/clickhouse/users.xml:/etc/clickhouse-server/users.xml
             - ./docker/clickhouse/user_defined_function.xml:/etc/clickhouse-server/user_defined_function.xml
             - ./posthog/user_scripts:/var/lib/clickhouse/user_scripts
             - clickhouse-data:/var/lib/clickhouse
-            - ./data/clickhouse-backups:/backups
+            - ./data/clickhouse-backups:/var/lib/clickhouse/backups
             - ./posthog-clickhouse-dump-create.sh:/usr/local/bin/posthog-clickhouse-dump-create.sh
 
     zookeeper:

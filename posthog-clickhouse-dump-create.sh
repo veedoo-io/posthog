@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Налаштування для ClickHouse
-BACKUP_DIR="/backups"
+BACKUP_DIR="/var/lib/clickhouse/backups"
 KEEP_DAYS=1
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="clickhouse_backup_${DATE}"
@@ -16,7 +16,7 @@ echo "Started ClickHouse backup at $(date)"
 cd /tmp
 
 # Виконання бекапу бази 'default'
-if clickhouse-client --query "BACKUP DATABASE default TO File('${BACKUP_DIR}/${BACKUP_NAME}')"; then
+if clickhouse-client --query "BACKUP DATABASE default TO File('/var/lib/clickhouse/backups/${BACKUP_NAME}/')"; then
     echo "✅ ClickHouse backup created at: ${BACKUP_PATH}"
     
     # Переходимо в папку бекапів для стискання
