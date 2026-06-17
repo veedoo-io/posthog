@@ -872,7 +872,7 @@ services:
 networks:
     default:
     dokploy-network:
-        # external: true  # Коментовано для локального запуску
+         external: true
 
 volumes:
     zookeeper-data:
