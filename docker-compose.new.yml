@@ -141,7 +141,6 @@ services:
         logging: *default-logging
         volumes:
             - ./compose:/compose
-            - ./compose:/code/compose
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
             - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
             - ./ee/settings.py:/code/ee/settings.py
@@ -460,7 +459,6 @@ services:
             service: temporal-django-worker
         volumes:
             - ./compose:/compose
-            - ./compose:/code/compose
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
             - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
             - ./ee/settings.py:/code/ee/settings.py
