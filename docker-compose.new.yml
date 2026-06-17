@@ -65,6 +65,8 @@ services:
             - ./docker/clickhouse/user_defined_function.xml:/etc/clickhouse-server/user_defined_function.xml
             - ./posthog/user_scripts:/var/lib/clickhouse/user_scripts
             - clickhouse-data:/var/lib/clickhouse
+            - ./data/clickhouse-backups:/backups
+            - ./posthog-clickhouse-dump-create.sh:/usr/local/bin/posthog-clickhouse-dump-create.sh
 
     zookeeper:
         extends:
@@ -852,12 +854,13 @@ services:
             - clickhouse-data:/home/${SFTP_USER:-sftp_user}/clickhouse-data:rw
             - kafka-data:/home/${SFTP_USER:-sftp_user}/kafka-data:rw
             - ./data/backups:/home/${SFTP_USER:-sftp_user}/backups:rw
+            - ./data/clickhouse-backups:/home/${SFTP_USER:-sftp_user}/clickhouse-backups:rw
         environment:
             - SFTP_USERS=${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
         restart: unless-stopped
         entrypoint: |
             sh -c "
-            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data backups; do
+            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data backups clickhouse-backups; do
               chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$$dir &&
               chmod -R 777 /home/${SFTP_USER:-sftp_user}/$$dir;
             done &&
