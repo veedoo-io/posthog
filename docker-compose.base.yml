@@ -827,7 +827,7 @@ services:
                 echo "SeaweedFS ready with posthog bucket"
                 wait $$WEED_PID
             - --
-        command: ['server', '-s3', '-s3.port=8333', '-dir=/data']
+        command: ['server', '-s3', '-s3.port=8333', '-ip=0.0.0.0', '-master.port=9333', '-dir=/data']
 
     duckgres:
         # DuckLake 0.4 + DuckDB 1.5.1, multi-arch (posthog/duckgres@5cfca88)

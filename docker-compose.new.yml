@@ -239,7 +239,8 @@ services:
             OTEL_EXPORTER_OTLP_ENDPOINT: ''
             LOGS_REDIS_TLS: 'false'
             CDP_REDIS_TLS: 'false'
-            TRACES_REDIS_HOST: ""
+            TRACES_REDIS_HOST: redis7
+            LOGS_REDIS_HOST: redis7
         volumes:
             - ./share:/share
         depends_on:
@@ -342,8 +343,8 @@ services:
         environment:
             LOGS_REDIS_TLS: 'false'
             CDP_REDIS_TLS: 'false'
-            TRACES_REDIS_HOST: ""
-            LOGS_REDIS_HOST: ""
+            TRACES_REDIS_HOST: redis7
+            LOGS_REDIS_HOST: redis7
         depends_on:
             - db
             - redis7
@@ -361,8 +362,8 @@ services:
         environment:
             LOGS_REDIS_TLS: 'false'
             CDP_REDIS_TLS: 'false'
-            TRACES_REDIS_HOST: ""
-            LOGS_REDIS_HOST: ""
+            TRACES_REDIS_HOST: redis7
+            LOGS_REDIS_HOST: redis7
         depends_on:
             - db
             - redis7
@@ -425,6 +426,7 @@ services:
         networks:
             - default
             - dokploy-network
+        command: ['server', '-s3', '-s3.port=8333', '-ip=0.0.0.0', '-master.port=9333', '-dir=/data']
         ports:
             - '8333:8333' # S3 API
             - '9333:9333' # Master server
@@ -693,6 +695,8 @@ services:
             file: docker-compose.base.yml
             service: hypercache-server
         logging: *default-logging
+        ports:
+            - "3002:3002"
         networks:
             - default
             - dokploy-network
@@ -835,7 +839,7 @@ services:
 networks:
     default:
     dokploy-network:
-        external: true
+        # external: true  # Коментовано для локального запуску
 
 volumes:
     zookeeper-data:
