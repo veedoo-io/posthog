@@ -540,6 +540,9 @@ services:
             file: docker-compose.base.yml
             service: temporal-django-worker
         logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
         volumes:
             - ./compose:/compose
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
@@ -566,6 +569,9 @@ services:
         extends:
             file: docker-compose.base.yml
             service: temporal-django-worker
+        networks:
+            - default
+            - dokploy-network
         volumes:
             - ./compose:/compose
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
@@ -866,7 +872,7 @@ services:
 networks:
     default:
     dokploy-network:
-         external: true
+        # external: true  # Коментовано для локального запуску
 
 volumes:
     zookeeper-data:
