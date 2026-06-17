@@ -147,6 +147,12 @@ services:
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            BROWSERLESS_CDP_URL: 'ws://browserless:3000'
+            BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            HEATMAP_BROWSERLESS_URL: 'http://browserless:3000'
+            HEATMAP_BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            # blockConsentModals is a browserless.io cloud API extension; the OSS image 400s on it
+            HEATMAP_BROWSERLESS_BLOCK_CONSENT_MODALS: 'false'
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
         depends_on:
             db:
@@ -160,6 +166,8 @@ services:
             web:
                 condition: service_started
             personhog-router:
+                condition: service_started
+            browserless:
                 condition: service_started
     web:
         extends:
@@ -220,6 +228,12 @@ services:
             IS_BEHIND_PROXY: 'True'
             TRUST_ALL_PROXIES: 'True'
             DISABLE_SECURE_SSL_REDIRECT: 'True'
+            BROWSERLESS_CDP_URL: 'ws://browserless:3000'
+            BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            HEATMAP_BROWSERLESS_URL: 'http://browserless:3000'
+            HEATMAP_BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            # blockConsentModals is a browserless.io cloud API extension; the OSS image 400s on it
+            HEATMAP_BROWSERLESS_BLOCK_CONSENT_MODALS: 'false'
         depends_on:
             - db
             - redis7
@@ -228,6 +242,7 @@ services:
             - objectstorage
             - seaweedfs
             - personhog-router
+            - browserless
 
     plugins:
         extends:
@@ -549,6 +564,12 @@ services:
         environment:
             SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
+            BROWSERLESS_CDP_URL: 'ws://browserless:3000'
+            BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            HEATMAP_BROWSERLESS_URL: 'http://browserless:3000'
+            HEATMAP_BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            # blockConsentModals is a browserless.io cloud API extension; the OSS image 400s on it
+            HEATMAP_BROWSERLESS_BLOCK_CONSENT_MODALS: 'false'
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
@@ -560,6 +581,18 @@ services:
             - objectstorage
             - seaweedfs
             - temporal
+            - browserless
+
+    browserless:
+        # Renders image exports and heatmap screenshots (no browser ships in the PostHog image).
+        image: ghcr.io/browserless/chromium:v2.51.2
+        restart: on-failure
+        logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
+        environment:
+            TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
 
     # Max AI worker - requires OPENAI_API_KEY to be set
     # ANTHROPIC_API_KEY is optional (only for /ticket command)
@@ -591,6 +624,15 @@ services:
             SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
             TEMPORAL_TASK_QUEUE: max-ai-task-queue
+            BROWSERLESS_CDP_URL: 'ws://browserless:3000'
+            BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            HEATMAP_BROWSERLESS_URL: 'http://browserless:3000'
+            HEATMAP_BROWSERLESS_TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
+            # blockConsentModals is a browserless.io cloud API extension; the OSS image 400s on it
+            HEATMAP_BROWSERLESS_BLOCK_CONSENT_MODALS: 'false'
+
+            TEMPORAL_HOST: temporal
+            TEMPORAL_PORT: 7233
             OPENAI_API_KEY: ${OPENAI_API_KEY}
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
             HOGAI_ANTHROPIC_MODEL: ${HOGAI_ANTHROPIC_MODEL}
@@ -602,6 +644,7 @@ services:
             - objectstorage
             - seaweedfs
             - temporal
+            - browserless
 
     cyclotron-janitor:
         extends:
