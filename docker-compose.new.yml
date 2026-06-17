@@ -26,6 +26,8 @@ services:
             - dokploy-network
         volumes:
             - postgres-data:/var/lib/postgresql/data
+            - ./data/backups:/backups
+            - ./posthog-db-dump-create.sh:/usr/local/bin/posthog-db-dump-create.sh
 
     redis7:
         extends:
@@ -849,12 +851,13 @@ services:
             - postgres-data:/home/${SFTP_USER:-sftp_user}/postgres-data:rw
             - clickhouse-data:/home/${SFTP_USER:-sftp_user}/clickhouse-data:rw
             - kafka-data:/home/${SFTP_USER:-sftp_user}/kafka-data:rw
+            - ./data/backups:/home/${SFTP_USER:-sftp_user}/backups:rw
         environment:
             - SFTP_USERS=${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
         restart: unless-stopped
         entrypoint: |
             sh -c "
-            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data; do
+            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data backups; do
               chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$$dir &&
               chmod -R 777 /home/${SFTP_USER:-sftp_user}/$$dir;
             done &&
