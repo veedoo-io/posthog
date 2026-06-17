@@ -154,15 +154,6 @@ services:
             service: web
         command: /compose/start
         logging: *default-logging
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.posthog.rule=Host(`posthog.euvsd.info`)"
-            - "traefik.http.routers.posthog.entrypoints=websecure"
-            - "traefik.http.routers.posthog.tls.certresolver=letsencrypt"
-            - "traefik.http.services.posthog.loadbalancer.server.port=8000"
-            - "traefik.http.routers.posthog-http.rule=Host(`posthog.euvsd.info`)"
-            - "traefik.http.routers.posthog-http.entrypoints=web"
-            - "traefik.http.routers.posthog-http.middlewares=redirect-to-https@file"
         networks:
             - default
             - dokploy-network
@@ -353,6 +344,15 @@ services:
             file: docker-compose.base.yml
             service: proxy
         logging: *default-logging
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.posthog.rule=Host(`posthog.euvsd.info`)"
+            - "traefik.http.routers.posthog.entrypoints=websecure"
+            - "traefik.http.routers.posthog.tls.certresolver=letsencrypt"
+            - "traefik.http.services.posthog.loadbalancer.server.port=80"
+            - "traefik.http.routers.posthog-http.rule=Host(`posthog.euvsd.info`)"
+            - "traefik.http.routers.posthog-http.entrypoints=web"
+            - "traefik.http.routers.posthog-http.middlewares=redirect-to-https@file"
         networks:
             - default
             - dokploy-network
