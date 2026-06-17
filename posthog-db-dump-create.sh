@@ -28,8 +28,8 @@ else
     exit 1
 fi
 
-# Видалення старих бекапів
-echo "Cleaning up backups older than $KEEP_DAYS days..."
-find "$BACKUP_DIR" -name "posthog_db_*.sql.gz" -type f -mtime +"$KEEP_DAYS" -exec rm -f {} \; -print
+# Видалення старих бекапів (залишаємо тільки останній)
+echo "Cleaning up old backups, keeping only the latest one..."
+ls -t "$BACKUP_DIR"/posthog_db_*.sql.gz | tail -n +2 | xargs -r rm -f
 
 echo "Finished backup at $(date)"
