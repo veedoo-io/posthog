@@ -12,12 +12,16 @@ mkdir -p "$BACKUP_DIR"
 
 echo "Started ClickHouse backup at $(date)"
 
+# Переходимо в папку бекапів
+cd "$BACKUP_DIR"
+
 # Виконання бекапу бази 'default'
-if clickhouse-client --query "BACKUP DATABASE default TO File('${BACKUP_PATH}/')"; then
+# Використовуємо відносний шлях, оскільки ми вже в дозволеній директорії
+if clickhouse-client --query "BACKUP DATABASE default TO File('${BACKUP_NAME}/')"; then
     echo "✅ ClickHouse backup created at: ${BACKUP_PATH}"
     
-    # Стискаємо в архів для зручності викачування через SFTP
-    cd "$BACKUP_DIR" && tar -czf "${BACKUP_NAME}.tar.gz" "$BACKUP_NAME" && rm -rf "$BACKUP_NAME"
+    # Стискаємо в архів
+    tar -czf "${BACKUP_NAME}.tar.gz" "${BACKUP_NAME}" && rm -rf "${BACKUP_NAME}"
     echo "✅ Backup compressed to: ${BACKUP_NAME}.tar.gz"
 else
     echo "❌ ClickHouse backup failed!"
