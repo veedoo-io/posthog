@@ -107,8 +107,4 @@
         <hostClusterType>online</hostClusterType>
         <hostClusterRole>data</hostClusterRole>
     </macros>
-
-    <backups>
-        <allowed_path>/backups/</allowed_path>
-    </backups>
 </clickhouse>
