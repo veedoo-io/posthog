@@ -12,22 +12,32 @@ mkdir -p "$BACKUP_DIR"
 
 echo "Started ClickHouse backup at $(date)"
 
-# Встановлюємо робочу директорію в /tmp, щоб уникнути помилки "cannot get current directory"
-cd /tmp
+# Отримуємо список всіх баз даних, крім системних
+DATABASES=$(clickhouse-client --query "SHOW DATABASES" | grep -vE 'system|information_schema|INFORMATION_SCHEMA')
 
-# Виконання бекапу бази 'default'
-if clickhouse-client --query "BACKUP DATABASE default TO File('/backups/${BACKUP_NAME}/')"; then
-    echo "✅ ClickHouse backup created at: ${BACKUP_PATH}"
-    
-    # Переходимо в папку бекапів для стискання
-    cd "$BACKUP_DIR"
-    # Стискаємо в архів
-    tar -czf "${BACKUP_NAME}.tar.gz" "${BACKUP_NAME}" && rm -rf "${BACKUP_NAME}"
-    echo "✅ Backup compressed to: ${BACKUP_NAME}.tar.gz"
-else
-    echo "❌ ClickHouse backup failed!"
-    exit 1
-fi
+echo "Found databases: $DATABASES"
+
+# Створюємо тимчасову папку для цього бекапу
+mkdir -p "/backups/${BACKUP_NAME}"
+
+# Виконання бекапу для кожної бази
+for db in $DATABASES; do
+    echo "Backing up database: $db"
+    if clickhouse-client --query "BACKUP DATABASE $db TO File('/backups/${BACKUP_NAME}/$db/')"; then
+        echo "✅ Database $db backed up"
+    else
+        echo "❌ Backup of $db failed!"
+        exit 1
+    fi
+done
+
+echo "✅ ClickHouse backup created at: ${BACKUP_PATH}"
+
+# Переходимо в папку бекапів для стискання
+cd "/backups"
+# Стискаємо в архів
+tar -czf "${BACKUP_NAME}.tar.gz" "${BACKUP_NAME}" && rm -rf "${BACKUP_NAME}"
+echo "✅ Backup compressed to: ${BACKUP_NAME}.tar.gz"
 
 # Видалення старих бекапів (залишаємо тільки останній)
 echo "Cleaning up old ClickHouse backups, keeping only the latest one..."
