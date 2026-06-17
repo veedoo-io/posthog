@@ -12,6 +12,9 @@ mkdir -p "$BACKUP_DIR"
 
 echo "Started ClickHouse backup at $(date)"
 
+# Встановлюємо робочу директорію в /tmp, щоб уникнути помилки "cannot get current directory"
+cd /tmp
+
 # Виконання бекапу бази 'default'
 if clickhouse-client --query "BACKUP DATABASE default TO File('${BACKUP_DIR}/${BACKUP_NAME}')"; then
     echo "✅ ClickHouse backup created at: ${BACKUP_PATH}"
