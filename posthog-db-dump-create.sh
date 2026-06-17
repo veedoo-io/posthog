@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Налаштування для роботи ВСЕРЕДИНІ контейнера
-# Папка /backups має бути прокинута через volumes у docker-compose
-BACKUP_DIR="/backups"
+# Папка /db-backups має бути прокинута через volumes у docker-compose
+BACKUP_DIR="/db-backups"
 KEEP_DAYS=1
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="${BACKUP_DIR}/posthog_db_${DATE}.sql.gz"
