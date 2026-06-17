@@ -65,7 +65,7 @@ services:
             - ./docker/clickhouse/user_defined_function.xml:/etc/clickhouse-server/user_defined_function.xml
             - ./posthog/user_scripts:/var/lib/clickhouse/user_scripts
             - clickhouse-data:/var/lib/clickhouse
-            - ./data/clickhouse-backups:/db-backups
+            - ./data/clickhouse-backups:/clickhouse-backups
             - ./posthog-clickhouse-dump-create.sh:/usr/local/bin/posthog-clickhouse-dump-create.sh
 
     zookeeper:

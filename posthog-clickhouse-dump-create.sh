@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Налаштування для ClickHouse
-BACKUP_DIR="/backups"
+BACKUP_DIR="/clickhouse-backups"
 KEEP_DAYS=1
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="clickhouse_backup_${DATE}"
