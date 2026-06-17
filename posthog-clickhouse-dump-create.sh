@@ -29,8 +29,8 @@ else
     exit 1
 fi
 
-# Видалення старих бекапів
-echo "Cleaning up old ClickHouse backups..."
-find "$BACKUP_DIR" -name "clickhouse_backup_*.tar.gz" -type f -mtime +"$KEEP_DAYS" -exec rm -f {} \; -print
+# Видалення старих бекапів (залишаємо тільки останній)
+echo "Cleaning up old ClickHouse backups, keeping only the latest one..."
+ls -t "$BACKUP_DIR"/clickhouse_backup_*.tar.gz | tail -n +2 | xargs -r rm -f
 
 echo "Finished ClickHouse backup at $(date)"
