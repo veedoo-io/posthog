@@ -28,6 +28,7 @@ services:
             - postgres-data:/var/lib/postgresql/data
             - ./data/db-backups:/db-backups
             - ./posthog-db-dump-create.sh:/usr/local/bin/posthog-db-dump-create.sh
+            - ./commands:/usr/local/bin/commands
 
     redis7:
         extends:
@@ -67,6 +68,7 @@ services:
             - clickhouse-data:/var/lib/clickhouse
             - ./data/clickhouse-backups:/clickhouse-backups
             - ./posthog-clickhouse-dump-create.sh:/usr/local/bin/posthog-clickhouse-dump-create.sh
+            - ./commands:/usr/local/bin/commands
 
     zookeeper:
         extends:
