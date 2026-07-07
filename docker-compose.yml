@@ -20,6 +20,7 @@ services:
             file: docker-compose.base.yml
             service: db
         image: ${DOCKER_REGISTRY_PREFIX:-}postgres:15.12-alpine
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -34,6 +35,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: redis7
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -49,7 +51,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: clickhouse
-        restart: on-failure
+        restart: unless-stopped
         logging: *default-logging
         depends_on:
             - kafka
@@ -74,6 +76,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: zookeeper
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -89,6 +92,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: kafka
+        restart: unless-stopped
         logging: *default-logging
         depends_on:
             - zookeeper
@@ -106,6 +110,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: worker
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -181,6 +186,7 @@ services:
             file: docker-compose.base.yml
             service: web
         command: /compose/start
+        restart: unless-stopped
         logging: *default-logging
         ports:
             - "8000:8000"
@@ -263,6 +269,7 @@ services:
             file: docker-compose.base.yml
             service: plugins
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -309,6 +316,7 @@ services:
             file: docker-compose.base.yml
             service: ingestion-general
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -328,6 +336,7 @@ services:
             file: docker-compose.base.yml
             service: ingestion-sessionreplay
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -352,6 +361,7 @@ services:
             file: docker-compose.base.yml
             service: recording-api
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -374,6 +384,7 @@ services:
             file: docker-compose.base.yml
             service: ingestion-error-tracking
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -390,6 +401,7 @@ services:
             file: docker-compose.base.yml
             service: ingestion-logs
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -409,6 +421,7 @@ services:
             file: docker-compose.base.yml
             service: ingestion-traces
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -429,6 +442,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: capture-ai
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
