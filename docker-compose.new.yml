@@ -427,7 +427,8 @@ services:
         environment:
             LOGS_REDIS_TLS: 'false'
             CDP_REDIS_TLS: 'false'
-            TRACES_REDIS_HOST: redis7
+            TRACES_REDIS_HOST: ""
+            #            TRACES_REDIS_HOST: 'redis://redis7:6379/'
             LOGS_REDIS_HOST: redis7
             REDIS_URL: 'redis://redis7:6379/'
         depends_on:
