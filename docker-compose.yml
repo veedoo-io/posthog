@@ -425,6 +425,27 @@ services:
             - redis7
             - kafka
 
+    capture-ai:
+        extends:
+            file: docker-compose.base.yml
+            service: capture-ai
+        logging: *default-logging
+        networks:
+            - default
+            - dokploy-network
+        environment:
+            AI_S3_BUCKET: $OBJECT_STORAGE_BUCKET
+            AI_S3_PREFIX: 'posthog/llma/'
+            AI_S3_ENDPOINT: $OBJECT_STORAGE_ENDPOINT
+            AI_S3_REGION: $OBJECT_STORAGE_REGION
+            AI_S3_ACCESS_KEY_ID: $OBJECT_STORAGE_ACCESS_KEY_ID
+            AI_S3_SECRET_ACCESS_KEY: $OBJECT_STORAGE_SECRET_ACCESS_KEY
+            AWS_ACCESS_KEY_ID: $OBJECT_STORAGE_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $OBJECT_STORAGE_SECRET_ACCESS_KEY
+        depends_on:
+            - kafka
+            - redis7
+
     proxy:
         extends:
             file: docker-compose.base.yml
@@ -768,6 +789,15 @@ services:
         networks:
             - default
             - dokploy-network
+        environment:
+            AWS_ACCESS_KEY_ID: $OBJECT_STORAGE_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $OBJECT_STORAGE_SECRET_ACCESS_KEY
+            OBJECT_STORAGE_ACCESS_KEY_ID: $OBJECT_STORAGE_ACCESS_KEY_ID
+            OBJECT_STORAGE_SECRET_ACCESS_KEY: $OBJECT_STORAGE_SECRET_ACCESS_KEY
+            OBJECT_STORAGE_BUCKET: $OBJECT_STORAGE_BUCKET
+            OBJECT_STORAGE_ENDPOINT: $OBJECT_STORAGE_ENDPOINT
+            OBJECT_STORAGE_REGION: $OBJECT_STORAGE_REGION
+            OBJECT_STORAGE_FORCE_PATH_STYLE: 'true'
         depends_on:
             - db
             - redis7
@@ -784,6 +814,15 @@ services:
         networks:
             - default
             - dokploy-network
+        environment:
+            AWS_ACCESS_KEY_ID: $OBJECT_STORAGE_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $OBJECT_STORAGE_SECRET_ACCESS_KEY
+            OBJECT_STORAGE_ACCESS_KEY_ID: $OBJECT_STORAGE_ACCESS_KEY_ID
+            OBJECT_STORAGE_SECRET_ACCESS_KEY: $OBJECT_STORAGE_SECRET_ACCESS_KEY
+            OBJECT_STORAGE_BUCKET: $OBJECT_STORAGE_BUCKET
+            OBJECT_STORAGE_ENDPOINT: $OBJECT_STORAGE_ENDPOINT
+            OBJECT_STORAGE_REGION: $OBJECT_STORAGE_REGION
+            OBJECT_STORAGE_FORCE_PATH_STYLE: 'true'
         depends_on:
             - redis7
 
