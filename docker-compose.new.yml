@@ -409,6 +409,7 @@ services:
             service: ingestion-logs
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -429,6 +430,7 @@ services:
             service: ingestion-traces
         image: ${REGISTRY_URL}-node:${POSTHOG_NODE_TAG:-latest}
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -449,6 +451,7 @@ services:
             file: docker-compose.base.yml
             service: capture-ai
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -561,6 +564,7 @@ services:
             file: docker-compose.base.yml
             service: temporal
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -583,6 +587,7 @@ services:
             file: docker-compose.base.yml
             service: temporal-admin-tools
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -593,6 +598,7 @@ services:
             file: docker-compose.base.yml
             service: temporal-ui
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -609,6 +615,7 @@ services:
             file: docker-compose.base.yml
             service: temporal-django-worker
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -656,6 +663,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: temporal-django-worker
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -725,6 +733,7 @@ services:
         extends:
             file: docker-compose.base.yml
             service: capture
+        restart: unless-stopped
         logging: *default-logging
         networks:
             - default
@@ -737,6 +746,7 @@ services:
             file: docker-compose.base.yml
             service: replay-capture
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -747,6 +757,7 @@ services:
             file: docker-compose.base.yml
             service: property-defs-rs
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -805,6 +816,7 @@ services:
             file: docker-compose.base.yml
             service: feature-flags
         logging: *default-logging
+        restart: unless-stopped
         networks:
             - default
             - dokploy-network
@@ -829,6 +841,7 @@ services:
             file: docker-compose.base.yml
             service: hypercache-server
         logging: *default-logging
+        restart: unless-stopped
         ports:
             - "3002:3002"
         networks:
