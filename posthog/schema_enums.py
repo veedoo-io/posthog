@@ -21,6 +21,15 @@ class AIEventType(StrEnum):
     FIELD_AI_GENERATION_CLUSTERS = "$ai_generation_clusters"
 
 
+class AccessControlLevel(StrEnum):
+    NONE = "none"
+    MEMBER = "member"
+    ADMIN = "admin"
+    VIEWER = "viewer"
+    EDITOR = "editor"
+    MANAGER = "manager"
+
+
 class MathGroupTypeIndex(float, Enum):
     NUMBER_0 = 0
     NUMBER_1 = 1
@@ -56,6 +65,7 @@ class AggregationAxisFormat(StrEnum):
 
 
 class AlertCalculationInterval(StrEnum):
+    REAL_TIME = "real_time"
     EVERY_15_MINUTES = "every_15_minutes"
     HOURLY = "hourly"
     DAILY = "daily"
@@ -327,6 +337,11 @@ class AssistantSetPropertyFilterOperator(StrEnum):
     IS_NOT_SET = "is_not_set"
 
 
+class Compare(StrEnum):
+    CURRENT = "current"
+    PREVIOUS = "previous"
+
+
 class AssistantStickinessDisplayType(StrEnum):
     ACTIONS_LINE_GRAPH = "ActionsLineGraph"
     ACTIONS_BAR = "ActionsBar"
@@ -417,11 +432,6 @@ class AssistantTool(StrEnum):
     OPEN_ACCOUNT = "open_account"
 
 
-class Compare(StrEnum):
-    CURRENT = "current"
-    PREVIOUS = "previous"
-
-
 class Display(StrEnum):
     AUTO = "Auto"
     ACTIONS_LINE_GRAPH = "ActionsLineGraph"
@@ -430,6 +440,7 @@ class Display(StrEnum):
     ACTIONS_AREA_GRAPH = "ActionsAreaGraph"
     ACTIONS_LINE_GRAPH_CUMULATIVE = "ActionsLineGraphCumulative"
     BOLD_NUMBER = "BoldNumber"
+    METRIC = "Metric"
     ACTIONS_PIE = "ActionsPie"
     ACTIONS_BAR_VALUE = "ActionsBarValue"
     ACTIONS_TABLE = "ActionsTable"
@@ -438,6 +449,12 @@ class Display(StrEnum):
     TWO_DIMENSIONAL_HEATMAP = "TwoDimensionalHeatmap"
     BOX_PLOT = "BoxPlot"
     SLOPE_GRAPH = "SlopeGraph"
+
+
+class MetricSummary(StrEnum):
+    TOTAL = "total"
+    AVERAGE = "average"
+    LATEST = "latest"
 
 
 class YAxisScaleType(StrEnum):
@@ -561,6 +578,7 @@ class ChartDisplayType(StrEnum):
     ACTIONS_AREA_GRAPH = "ActionsAreaGraph"
     ACTIONS_LINE_GRAPH_CUMULATIVE = "ActionsLineGraphCumulative"
     BOLD_NUMBER = "BoldNumber"
+    METRIC = "Metric"
     ACTIONS_PIE = "ActionsPie"
     ACTIONS_BAR_VALUE = "ActionsBarValue"
     ACTIONS_TABLE = "ActionsTable"
@@ -1030,10 +1048,10 @@ class ErrorTrackingOrderBy(StrEnum):
     SESSIONS = "sessions"
 
 
-class SourceType(StrEnum):
-    ISSUE_CREATED = "issue_created"
-    ISSUE_REOPENED = "issue_reopened"
-    ISSUE_SPIKING = "issue_spiking"
+class EvaluationRuntime(StrEnum):
+    HOG = "hog"
+    LLM_JUDGE = "llm_judge"
+    SENTIMENT = "sentiment"
 
 
 class CorrelationType(StrEnum):
@@ -1497,6 +1515,7 @@ class ExternalDataSourceType(StrEnum):
     INFOR_NEXUS = "InforNexus"
     INSIGHTFUL = "Insightful"
     INSIGHTLY = "Insightly"
+    INSTANTLY = "Instantly"
     INSTATUS = "Instatus"
     INTRUDER = "Intruder"
     INVOICED = "Invoiced"
@@ -1771,7 +1790,42 @@ class ExternalDataSourceType(StrEnum):
     ADAPTY = "Adapty"
     BRAINTRUST = "Braintrust"
     STREAM_ELEMENTS = "StreamElements"
+    STREAMLABS = "Streamlabs"
+    DATORAMA = "Datorama"
+    AHREFS = "Ahrefs"
+    LIGHTFIELD = "Lightfield"
+    APPSTACK = "Appstack"
+    RAZORPAY = "Razorpay"
+    NEON = "Neon"
+    NEW_RELIC = "NewRelic"
     CUSTOM = "Custom"
+    TILE38 = "Tile38"
+    CHATWOOT = "Chatwoot"
+    SANITY = "Sanity"
+    METRONOME = "Metronome"
+    JOBBER = "Jobber"
+    KNOCK = "Knock"
+    LEEXI = "Leexi"
+    RB2_B = "RB2B"
+    SUPERWALL = "Superwall"
+    LIANA = "Liana"
+    TAWK_TO = "TawkTo"
+    HIGHTOUCH = "Hightouch"
+    LEMON_SQUEEZY = "LemonSqueezy"
+    IKAS = "Ikas"
+    TALKWALKER = "Talkwalker"
+    NEXTDOOR_ADS = "NextdoorAds"
+    APP_LOVIN = "AppLovin"
+    BASEROW = "Baserow"
+    PLUNK = "Plunk"
+    DUB = "Dub"
+    AIR_OPS = "AirOps"
+    PODIUM = "Podium"
+    LOOPS = "Loops"
+    REDIS = "Redis"
+    MERCURY = "Mercury"
+    GOJIBERRY = "Gojiberry"
+    TEACHABLE = "Teachable"
 
 
 class ExternalQueryErrorCode(StrEnum):
@@ -1793,6 +1847,7 @@ class FileSystemIconType(StrEnum):
     DEFAULT_ICON_TYPE = "default_icon_type"
     DASHBOARD = "dashboard"
     LLM_ANALYTICS = "llm_analytics"
+    AI_GATEWAY = "ai_gateway"
     PRODUCT_ANALYTICS = "product_analytics"
     REVENUE_ANALYTICS = "revenue_analytics"
     REVENUE_ANALYTICS_METADATA = "revenue_analytics_metadata"
@@ -1846,7 +1901,7 @@ class FileSystemIconType(StrEnum):
     INSIGHT_HOG = "insight/hog"
     TEAM_ACTIVITY = "team_activity"
     HOME = "home"
-    APPS = "apps"
+    TOOLS = "tools"
     LIVE = "live"
     CHAT = "chat"
     SEARCH = "search"
@@ -1872,6 +1927,11 @@ class FileSystemIconType(StrEnum):
 class FilterLogicalOperator(StrEnum):
     AND_ = "AND"
     OR_ = "OR"
+
+
+class FunnelConversionMetric(StrEnum):
+    CONVERSION_FROM_START = "conversion_from_start"
+    CONVERSION_FROM_PREVIOUS = "conversion_from_previous"
 
 
 class FunnelConversionWindowTimeUnit(StrEnum):
@@ -1918,6 +1978,13 @@ class FunnelVizType(StrEnum):
     FLOW = "flow"
 
 
+class LegendPosition(StrEnum):
+    TOP = "top"
+    BOTTOM = "bottom"
+    LEFT = "left"
+    RIGHT = "right"
+
+
 class Position(StrEnum):
     START = "start"
     END = "end"
@@ -1942,12 +2009,6 @@ class GoogleAdsTableExclusions(StrEnum):
 
 class GoogleAdsTableKeywords(StrEnum):
     CAMPAIGN = "campaign"
-
-
-class HealthCheckSeverity(StrEnum):
-    CRITICAL = "critical"
-    WARNING = "warning"
-    INFO = "info"
 
 
 class GradientScaleMode(StrEnum):
@@ -2007,6 +2068,12 @@ class HogLanguage(StrEnum):
     HOG_QL_EXPR = "hogQLExpr"
     HOG_TEMPLATE = "hogTemplate"
     LIQUID = "liquid"
+
+
+class HogQLAlertEvaluation(StrEnum):
+    LAST_ROW = "last_row"
+    FIRST_ROW = "first_row"
+    ANY_ROW = "any_row"
 
 
 class BounceRatePageViewMode(StrEnum):
@@ -2152,6 +2219,9 @@ class IntegrationKind(StrEnum):
     CUSTOMERIO_APP = "customerio-app"
     CUSTOMERIO_WEBHOOK = "customerio-webhook"
     CUSTOMERIO_TRACK = "customerio-track"
+    POSTGRESQL = "postgresql"
+    AWS_S3 = "aws-s3"
+    S3_COMPATIBLE = "s3-compatible"
 
 
 class IntervalType(StrEnum):
@@ -2161,6 +2231,8 @@ class IntervalType(StrEnum):
     DAY = "day"
     WEEK = "week"
     MONTH = "month"
+    QUARTER = "quarter"
+    YEAR = "year"
 
 
 class Method(StrEnum):
@@ -2209,16 +2281,6 @@ class LogSeverityLevel(StrEnum):
     FATAL = "fatal"
 
 
-class Action1(StrEnum):
-    FIRING = "firing"
-    BROKEN = "broken"
-
-
-class ThresholdOperator(StrEnum):
-    ABOVE = "above"
-    BELOW = "below"
-
-
 class LogsOrderBy(StrEnum):
     LATEST = "latest"
     EARLIEST = "earliest"
@@ -2227,6 +2289,11 @@ class LogsOrderBy(StrEnum):
 class LogsSparklineBreakdownBy(StrEnum):
     SEVERITY = "severity"
     SERVICE = "service"
+
+
+class NeighborDirection(StrEnum):
+    BEFORE = "before"
+    AFTER = "after"
 
 
 class MarketingAnalyticsBaseColumns(StrEnum):
@@ -2311,11 +2378,6 @@ class MaxBillingContextSubscriptionLevel(StrEnum):
     FREE = "free"
     PAID = "paid"
     CUSTOM = "custom"
-
-
-class EvaluationType(StrEnum):
-    HOG = "hog"
-    LLM_JUDGE = "llm_judge"
 
 
 class Goal(Enum):
@@ -2493,6 +2555,7 @@ class NodeKind(StrEnum):
     ACTORS_PROPERTY_TAXONOMY_QUERY = "ActorsPropertyTaxonomyQuery"
     TRACES_QUERY = "TracesQuery"
     TRACE_QUERY = "TraceQuery"
+    SESSION_QUERY = "SessionQuery"
     TRACE_NEIGHBORS_QUERY = "TraceNeighborsQuery"
     VECTOR_SEARCH_QUERY = "VectorSearchQuery"
     DOCUMENT_SIMILARITY_QUERY = "DocumentSimilarityQuery"
@@ -2501,6 +2564,14 @@ class NodeKind(StrEnum):
     ENDPOINTS_USAGE_OVERVIEW_QUERY = "EndpointsUsageOverviewQuery"
     ENDPOINTS_USAGE_TABLE_QUERY = "EndpointsUsageTableQuery"
     ENDPOINTS_USAGE_TRENDS_QUERY = "EndpointsUsageTrendsQuery"
+    MCP_HARNESS_BREAKDOWN_QUERY = "MCPHarnessBreakdownQuery"
+    MCP_TOOL_TOP_USERS_QUERY = "MCPToolTopUsersQuery"
+    MCP_TOOL_FAILURES_QUERY = "MCPToolFailuresQuery"
+    MCP_TOOL_STATS_QUERY = "MCPToolStatsQuery"
+    MCP_TOOL_DAILY_STATS_QUERY = "MCPToolDailyStatsQuery"
+    MCP_TOOL_DESCRIPTIONS_QUERY = "MCPToolDescriptionsQuery"
+    MCP_TOOL_SAMPLE_INTENTS_QUERY = "MCPToolSampleIntentsQuery"
+    MCP_TOOL_NEIGHBORS_QUERY = "MCPToolNeighborsQuery"
     PROPERTY_VALUES_QUERY = "PropertyValuesQuery"
 
 
@@ -2514,6 +2585,17 @@ class PathType(StrEnum):
     FIELD_SCREEN = "$screen"
     CUSTOM_EVENT = "custom_event"
     HOGQL = "hogql"
+
+
+class SliceContent(StrEnum):
+    LABELS = "labels"
+    VALUES = "values"
+    NONE = "none"
+
+
+class ValueDisplay(StrEnum):
+    ABSOLUTE = "absolute"
+    PERCENTAGE = "percentage"
 
 
 class PinterestAdsDefaultSources(StrEnum):
@@ -2556,6 +2638,8 @@ class ProductIntentContext(StrEnum):
     LLM_DATASET_CREATED = "llm_dataset_created"
     LLM_EVALUATION_CREATED = "llm_evaluation_created"
     LLM_PROMPT_CREATED = "llm_prompt_created"
+    MCP_ANALYTICS_VIEWED = "mcp_analytics_viewed"
+    MCP_ANALYTICS_CONNECTED = "mcp_analytics_connected"
     LOGS_DOCS_VIEWED = "logs_docs_viewed"
     LOGS_SET_FILTERS = "logs_set_filters"
     LOGS_SETTINGS_OPENED = "logs_settings_opened"
@@ -2641,6 +2725,7 @@ class ProductItemCategory(StrEnum):
 
 class ProductKey(StrEnum):
     ACTIONS = "actions"
+    AI_GATEWAY = "ai_gateway"
     LLM_ANALYTICS = "llm_analytics"
     ALERTS = "alerts"
     ANNOTATIONS = "annotations"
@@ -2670,6 +2755,7 @@ class ProductKey(StrEnum):
     LOGS = "logs"
     MARKETING_ANALYTICS = "marketing_analytics"
     MAX = "max"
+    MCP_ANALYTICS = "mcp_analytics"
     MOBILE_REPLAY = "mobile_replay"
     NOTEBOOKS = "notebooks"
     PERSONS = "persons"
@@ -2704,6 +2790,7 @@ class PropertyFilterType(StrEnum):
     INTERNAL_EVENT = "internal_event"
     EVENT_METADATA = "event_metadata"
     PERSON = "person"
+    PERSON_METADATA = "person_metadata"
     ELEMENT = "element"
     FEATURE = "feature"
     SESSION = "session"
@@ -2816,6 +2903,7 @@ class RecordingOrder(StrEnum):
     MOUSE_ACTIVITY_COUNT = "mouse_activity_count"
     ACTIVITY_SCORE = "activity_score"
     RECORDING_TTL = "recording_ttl"
+    SURFACING_SCORE = "surfacing_score"
 
 
 class RecordingOrderDirection(StrEnum):
@@ -2906,14 +2994,6 @@ class SessionAttributionGroupBy(StrEnum):
     INITIAL_URL = "InitialURL"
 
 
-class ProblemType(StrEnum):
-    CONFUSION = "confusion"
-    ABANDONMENT = "abandonment"
-    BLOCKING_EXCEPTION = "blocking_exception"
-    NON_BLOCKING_EXCEPTION = "non_blocking_exception"
-    FAILURE = "failure"
-
-
 class SnapshotSource(StrEnum):
     WEB = "web"
     MOBILE = "mobile"
@@ -2924,54 +3004,6 @@ class Theme(StrEnum):
     LIGHT = "light"
     DARK = "dark"
     SYSTEM = "system"
-
-
-class Priority(StrEnum):
-    P0 = "P0"
-    P1 = "P1"
-    P2 = "P2"
-    P3 = "P3"
-    P4 = "P4"
-
-
-class SignalSourceProduct(StrEnum):
-    SESSION_REPLAY = "session_replay"
-    LLM_ANALYTICS = "llm_analytics"
-    GITHUB = "github"
-    LINEAR = "linear"
-    ZENDESK = "zendesk"
-    CONVERSATIONS = "conversations"
-    ERROR_TRACKING = "error_tracking"
-    ENDPOINTS = "endpoints"
-    PGANALYZE = "pganalyze"
-    SIGNALS_SCOUT = "signals_scout"
-    LOGS = "logs"
-    HEALTH_CHECKS = "health_checks"
-
-
-class SignalSourceType(StrEnum):
-    SESSION_ANALYSIS_CLUSTER = "session_analysis_cluster"
-    SESSION_PROBLEM = "session_problem"
-    EVALUATION = "evaluation"
-    EVALUATION_REPORT = "evaluation_report"
-    ISSUE = "issue"
-    TICKET = "ticket"
-    ISSUE_CREATED = "issue_created"
-    ISSUE_REOPENED = "issue_reopened"
-    ISSUE_SPIKING = "issue_spiking"
-    ENDPOINT_EXECUTION_FAILED = "endpoint_execution_failed"
-    ENDPOINT_BREAKDOWN_LIMIT_EXCEEDED = "endpoint_breakdown_limit_exceeded"
-    CROSS_SOURCE_ISSUE = "cross_source_issue"
-    ALERT_STATE_CHANGE = "alert_state_change"
-    HEALTH_ISSUE = "health_issue"
-
-
-class Severity(StrEnum):
-    P0 = "P0"
-    P1 = "P1"
-    P2 = "P2"
-    P3 = "P3"
-    P4 = "P4"
 
 
 class SimpleIntervalType(StrEnum):
@@ -2999,6 +3031,7 @@ class SlackIntegrationScope(StrEnum):
 class SlackIntegrationScopeInReview(StrEnum):
     ASSISTANT_WRITE = "assistant:write"
     CHANNELS_MANAGE = "channels:manage"
+    COMMANDS = "commands"
     IM_HISTORY = "im:history"
     MPIM_READ = "mpim:read"
 
@@ -3172,6 +3205,7 @@ class TaxonomicFilterGroupType(StrEnum):
     COHORTS = "cohorts"
     COHORTS_WITH_ALL = "cohorts_with_all"
     DATA_WAREHOUSE = "data_warehouse"
+    DATA_WAREHOUSE_SOURCE_TABLES = "data_warehouse_source_tables"
     DATA_WAREHOUSE_PROPERTIES = "data_warehouse_properties"
     DATA_WAREHOUSE_PERSON_PROPERTIES = "data_warehouse_person_properties"
     ELEMENTS = "elements"
@@ -3183,6 +3217,7 @@ class TaxonomicFilterGroupType(StrEnum):
     EVENT_METADATA = "event_metadata"
     NUMERICAL_EVENT_PROPERTIES = "numerical_event_properties"
     PERSON_PROPERTIES = "person_properties"
+    PERSON_METADATA = "person_metadata"
     PAGEVIEW_URLS = "pageview_urls"
     PAGEVIEW_EVENTS = "pageview_events"
     SCREENS = "screens"
@@ -3305,6 +3340,12 @@ class WebAnalyticsOrderByFields(StrEnum):
     RAGE_CLICKS = "RageClicks"
     DEAD_CLICKS = "DeadClicks"
     ERRORS = "Errors"
+
+
+class WebAnalyticsPreComputeStrategy(StrEnum):
+    PRE_AGGREGATED = "pre_aggregated"
+    LAZY_PRECOMPUTE = "lazy_precompute"
+    LIVE = "live"
 
 
 class WebStatsBreakdown(StrEnum):

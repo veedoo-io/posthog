@@ -10,14 +10,20 @@ import type { AccountsQuery } from '~/queries/schema/schema-general'
 import { initKeaTests } from '~/test/init'
 import type { UserBasicType, UserType } from '~/types'
 
-import { accountsPartialUpdate, accountsRetrieve } from 'products/customer_analytics/frontend/generated/api'
+import {
+    accountsPartialUpdate,
+    accountsRetrieve,
+    customPropertyDefinitionsList,
+} from 'products/customer_analytics/frontend/generated/api'
 import type { AccountApi } from 'products/customer_analytics/frontend/generated/api.schemas'
 
+import { customerAnalyticsSceneLogic } from '../../customerAnalyticsSceneLogic'
 import {
     ACCOUNTS_HOGQL_DEFAULT_SELECT,
     ACCOUNTS_NAME_COLUMN,
     accountsColumnConfigLogic,
 } from './accountsColumnConfigLogic'
+import { DEFAULT_ACCOUNT_TAB, accountsExpansionLogic } from './accountsExpansionLogic'
 import { accountsLogic, savingRoleKey } from './accountsLogic'
 
 // `hogqlQuery.source` is typed as the full DataTableNode source union; this logic
@@ -25,12 +31,20 @@ import { accountsLogic, savingRoleKey } from './accountsLogic'
 const orderByOf = (source: unknown): AccountsQuery['orderBy'] => (source as AccountsQuery).orderBy
 
 jest.mock('products/customer_analytics/frontend/generated/api', () => ({
+    // Keep the real module for everything else — connected logics (e.g. column config's
+    // customPropertyDefinitionsList) call other generated functions on mount, and an
+    // absent export makes their loaders throw on every test.
+    ...jest.requireActual('products/customer_analytics/frontend/generated/api'),
     accountsRetrieve: jest.fn(),
     accountsPartialUpdate: jest.fn(),
+    customPropertyDefinitionsList: jest.fn(),
 }))
 
 const mockAccountsRetrieve = accountsRetrieve as jest.MockedFunction<typeof accountsRetrieve>
 const mockAccountsPartialUpdate = accountsPartialUpdate as jest.MockedFunction<typeof accountsPartialUpdate>
+const mockCustomPropertyDefinitionsList = customPropertyDefinitionsList as jest.MockedFunction<
+    typeof customPropertyDefinitionsList
+>
 
 const buildAccount = (overrides: Partial<AccountApi> = {}): AccountApi => ({
     id: 'acc-1',
@@ -64,12 +78,18 @@ describe('accountsLogic', () => {
     beforeEach(() => {
         initKeaTests()
         jest.resetAllMocks()
+        // accountsColumnConfigLogic (connected) loads custom property definitions on mount.
+        mockCustomPropertyDefinitionsList.mockResolvedValue({ count: 0, results: [] })
+        // accountsLogic connects to the (localStorage-persisted) shared scene logic;
+        // clear it so a "mine only" write in one test can't leak into the next.
+        localStorage.clear()
         logic = accountsLogic()
         logic.mount()
     })
 
     afterEach(() => {
         logic.unmount()
+        localStorage.clear()
     })
 
     it('starts with empty filters', () => {
@@ -96,9 +116,15 @@ describe('accountsLogic', () => {
         expect(logic.values.searchQuery).toBe('')
     })
 
-    it('carries the overview tile metrics on the same AccountsQuery', () => {
+    it('keeps the overview tile metrics off the list query so it loads independently', () => {
         const source = logic.values.hogqlQuery.source as AccountsQuery
-        expect(source.metrics).toEqual(['count()'])
+        expect(source.metrics).toBeUndefined()
+    })
+
+    it('exposes the overview tile metrics on a separate metrics-only query (no select)', () => {
+        const metricsQuery = logic.values.metricsQuery as AccountsQuery
+        expect(metricsQuery.metrics).toEqual(['count()'])
+        expect(metricsQuery.select).toBeUndefined()
     })
 
     it('setAllRolesUnassigned toggles the flag', () => {
@@ -196,6 +222,75 @@ describe('accountsLogic', () => {
 
             expect(logic.values.assignedToFilter).toEqual([CURRENT_USER_ID])
             expect(logic.values.assignedToCurrentUser).toBe(true)
+        })
+
+        // The "mine only" choice is held in the shared scene logic so it survives a
+        // switch to the Notes tab. These guard the two-way link between the accounts
+        // assigned-to filter and that shared toggle.
+        describe('shared "mine only" toggle', () => {
+            it('toggling "My accounts" writes the shared toggle', async () => {
+                await expectLogic(logic, () => {
+                    logic.actions.setAssignedToCurrentUser(true)
+                }).toFinishAllListeners()
+                expect(customerAnalyticsSceneLogic.values.mineOnly).toBe(true)
+
+                await expectLogic(logic, () => {
+                    logic.actions.setAssignedToCurrentUser(false)
+                }).toFinishAllListeners()
+                expect(customerAnalyticsSceneLogic.values.mineOnly).toBe(false)
+            })
+
+            it('picking explicit assignees clears the shared toggle', async () => {
+                customerAnalyticsSceneLogic.actions.setMineOnly(true)
+                await expectLogic(logic, () => {
+                    logic.actions.setAssignedToFilter([7])
+                }).toFinishAllListeners()
+                expect(customerAnalyticsSceneLogic.values.mineOnly).toBe(false)
+            })
+
+            it('restores "my accounts" from the shared toggle when the URL has no view hash', async () => {
+                customerAnalyticsSceneLogic.actions.setMineOnly(true)
+                router.actions.push(urls.customerAnalyticsAccounts())
+                await expectLogic(logic).toFinishAllListeners()
+
+                expect(logic.values.assignedToFilter).toEqual([CURRENT_USER_ID])
+                expect(logic.values.assignedToCurrentUser).toBe(true)
+            })
+
+            it('an explicit shared link still wins over the shared toggle', async () => {
+                customerAnalyticsSceneLogic.actions.setMineOnly(true)
+                router.actions.push(urls.customerAnalyticsAccounts(), {}, { view: { assignedTo: [7] } })
+                await expectLogic(logic).toFinishAllListeners()
+
+                expect(logic.values.assignedToFilter).toEqual([7])
+                expect(customerAnalyticsSceneLogic.values.mineOnly).toBe(false)
+            })
+
+            // Regression: on a fresh load the logic can run URL restore before userLogic
+            // resolves the user (currentUserId null), so the persisted choice can't be applied
+            // then. The user resolving later must apply it, without clearing the preference.
+            it('applies the persisted "my accounts" choice when the user resolves after restore', async () => {
+                customerAnalyticsSceneLogic.actions.setMineOnly(true)
+                expect(logic.values.assignedToFilter).toEqual([])
+
+                await expectLogic(logic, () => {
+                    userLogic.actions.loadUserSuccess(buildUser({ id: CURRENT_USER_ID }) as unknown as UserType)
+                }).toFinishAllListeners()
+
+                expect(logic.values.assignedToFilter).toEqual([CURRENT_USER_ID])
+                expect(customerAnalyticsSceneLogic.values.mineOnly).toBe(true)
+            })
+
+            it('the user resolving does not override an explicit assigned-to from the URL', async () => {
+                router.actions.push(urls.customerAnalyticsAccounts(), {}, { view: { assignedTo: [7] } })
+                await expectLogic(logic).toFinishAllListeners()
+
+                await expectLogic(logic, () => {
+                    userLogic.actions.loadUserSuccess(buildUser({ id: CURRENT_USER_ID }) as unknown as UserType)
+                }).toFinishAllListeners()
+
+                expect(logic.values.assignedToFilter).toEqual([7])
+            })
         })
     })
 
@@ -353,6 +448,57 @@ describe('accountsLogic', () => {
 
             const config = accountsColumnConfigLogic.findMounted()
             expect(config?.values.selectColumns).toEqual([ACCOUNTS_NAME_COLUMN, 'csm'])
+        })
+    })
+
+    describe('deep link (path route)', () => {
+        // `/customer_analytics/accounts/:accountId/:tab` filters the list to one account and opens a tab.
+        const ACCOUNT_ID = '0190da51-0b0e-7000-8000-000000000001'
+
+        const filterExpressionOf = (source: unknown): string | undefined => (source as AccountsQuery).filterExpression
+
+        it('filters the list to the account, expands it, and opens the requested tab', async () => {
+            router.actions.push(urls.customerAnalyticsAccount(ACCOUNT_ID, 'usage'))
+            await expectLogic(logic).toFinishAllListeners()
+
+            expect(logic.values.accountIdFilter).toBe(ACCOUNT_ID)
+            expect(filterExpressionOf(logic.values.hogqlQuery.source)).toContain(`toString(id) = '${ACCOUNT_ID}'`)
+            const expansion = accountsExpansionLogic.findMounted()
+            expect(expansion?.values.expandedAccountIds).toContain(ACCOUNT_ID)
+            expect(expansion?.values.activeTabByAccount[ACCOUNT_ID]).toBe('usage')
+        })
+
+        it('defaults the tab when the path omits it', async () => {
+            router.actions.push(urls.customerAnalyticsAccount(ACCOUNT_ID))
+            await expectLogic(logic).toFinishAllListeners()
+
+            const expansion = accountsExpansionLogic.findMounted()
+            expect(expansion?.values.activeTabByAccount[ACCOUNT_ID]).toBe(DEFAULT_ACCOUNT_TAB)
+        })
+
+        it('falls back to the default tab for an unknown tab', async () => {
+            router.actions.push(urls.customerAnalyticsAccount(ACCOUNT_ID, 'bogus'))
+            await expectLogic(logic).toFinishAllListeners()
+
+            const expansion = accountsExpansionLogic.findMounted()
+            expect(expansion?.values.activeTabByAccount[ACCOUNT_ID]).toBe(DEFAULT_ACCOUNT_TAB)
+        })
+
+        it('ignores a non-UUID account id', async () => {
+            router.actions.push(urls.customerAnalyticsAccount('not-a-uuid', 'usage'))
+            await expectLogic(logic).toFinishAllListeners()
+
+            expect(logic.values.accountIdFilter).toBeNull()
+        })
+
+        it('clears the account filter when returning to the bare list', async () => {
+            router.actions.push(urls.customerAnalyticsAccount(ACCOUNT_ID, 'usage'))
+            await expectLogic(logic).toFinishAllListeners()
+            expect(logic.values.accountIdFilter).toBe(ACCOUNT_ID)
+
+            router.actions.push(urls.customerAnalyticsAccounts())
+            await expectLogic(logic).toFinishAllListeners()
+            expect(logic.values.accountIdFilter).toBeNull()
         })
     })
 
