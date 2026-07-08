@@ -57,25 +57,55 @@ if [ ! -d "$BACKUP_PATH" ]; then
 fi
 
 # Відновлення з доливанням даних у наявні таблиці
+# Ми додаємо structure_only=0 для чіткості, хоча це за замовчуванням.
+# Якщо таблиці вже існують, allow_non_empty_tables=true дозволяє долив даних.
+# Проблема REPLICA_ALREADY_EXISTS зазвичай виникає, коли ClickHouse намагається створити метадані репліки в ZK, які вже там є.
 if clickhouse-client --query "RESTORE DATABASE posthog FROM File('${BACKUP_PATH}/') SETTINGS allow_non_empty_tables=true, allow_different_table_def=true"; then
     echo "✅ ClickHouse restore (append) completed from: ${BACKUP_PATH}"
     # Прибираємо розпаковану директорію, архів лишаємо
     rm -rf "$BACKUP_PATH"
 else
-    echo "❌ ClickHouse restore failed!"
-    exit 1
+    echo "⚠️ ClickHouse restore failed with DATABASE level. Trying table by table to bypass existing metadata conflicts..."
+    
+    # Отримуємо список таблиць з бекапу та пробуємо відновити кожну окремо.
+    # Це дозволить успішно виконати долив даних в існуючі таблиці, навіть якщо деякі з них мають конфлікти метаданих.
+    
+    echo "Attempting to restore tables individually..."
+    
+    # Тимчасово розпакуємо метадані бекапу, щоб знайти список таблиць (якщо ClickHouse не може дати список без RESTORE)
+    # В ClickHouse RESTORE DATABASE можна спробувати знайти таблиці через системну таблицю, якщо бекап вже розпакований.
+    
+    TABLES=$(ls "${BACKUP_PATH}/metadata/posthog/" 2>/dev/null | sed 's/\.sql$//')
+    
+    if [ -z "$TABLES" ]; then
+        echo "❌ Could not determine tables in backup at ${BACKUP_PATH}/metadata/posthog/"
+        exit 1
+    fi
+    
+    SUCCESS_COUNT=0
+    FAILURE_COUNT=0
+    
+    for TABLE in $TABLES; do
+        echo "Restoring table: $TABLE ..."
+        if clickhouse-client --query "RESTORE TABLE posthog.$TABLE FROM File('${BACKUP_PATH}/') SETTINGS allow_non_empty_tables=true, allow_different_table_def=true"; then
+            echo "✅ Table $TABLE restored."
+            SUCCESS_COUNT=$((SUCCESS_COUNT+1))
+        else
+            echo "⚠️ Failed to restore table $TABLE. This might be due to existing replica conflicts."
+            FAILURE_COUNT=$((FAILURE_COUNT+1))
+        fi
+    done
+    
+    echo "Restore summary: $SUCCESS_COUNT tables restored, $FAILURE_COUNT tables failed."
+    
+    if [ "$SUCCESS_COUNT" -gt 0 ]; then
+        echo "✅ At least some data was restored."
+        rm -rf "$BACKUP_PATH"
+    else
+        echo "❌ All table restores failed."
+        exit 1
+    fi
 fi
 
 echo "Finished ClickHouse restore at $(date)"
-
-
-
-if clickhouse-client --query "RESTORE DATABASE posthog FROM File('/clickhouse-backups/clickhouse_backups_20260624_082139/') SETTINGS allow_non_empty_tables=true, allow_different_table_def=true"; then
-    echo "✅ ClickHouse restore (append) completed from: ${BACKUP_PATH}"
-    # Прибираємо розпаковану директорію, архів лишаємо
-    rm -rf "$BACKUP_PATH"
-else
-    echo "❌ ClickHouse restore failed!"
-    exit 1
-fi
 

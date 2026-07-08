@@ -127,6 +127,7 @@ services:
         environment:
             SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
+            AGENT_INTERNAL_SIGNING_KEY: $AGENT_INTERNAL_SIGNING_KEY
             OBJECT_STORAGE_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY_ID}
             OBJECT_STORAGE_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY}
             OBJECT_STORAGE_ENDPOINT: ${OBJECT_STORAGE_ENDPOINT}
@@ -634,6 +635,7 @@ services:
             # AI provider keys for PostHog's AI features. Blank unless set in .env.
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            AGENT_INTERNAL_SIGNING_KEY: $AGENT_INTERNAL_SIGNING_KEY
         depends_on:
             - db
             - redis7
@@ -698,6 +700,7 @@ services:
             OPENAI_API_KEY: ${OPENAI_API_KEY}
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
             HOGAI_ANTHROPIC_MODEL: ${HOGAI_ANTHROPIC_MODEL}
+            AGENT_INTERNAL_SIGNING_KEY: ${AGENT_INTERNAL_SIGNING_KEY}
         depends_on:
             - db
             - redis7

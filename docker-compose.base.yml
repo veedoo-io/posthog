@@ -360,6 +360,9 @@ services:
             args:
                 BIN: capture
         restart: on-failure
+        depends_on:
+            kafka:
+                condition: service_healthy
         environment:
             ADDRESS: '0.0.0.0:3000'
             KAFKA_TOPIC: 'events_plugin_ingestion'
@@ -384,6 +387,9 @@ services:
             args:
                 BIN: capture
         restart: on-failure
+        depends_on:
+            kafka:
+                condition: service_healthy
         environment:
             ADDRESS: '0.0.0.0:3000'
             KAFKA_TOPIC: 'session_recording_snapshot_item_events'
@@ -398,6 +404,9 @@ services:
             args:
                 BIN: capture
         restart: on-failure
+        depends_on:
+            kafka:
+                condition: service_healthy
         environment:
             ADDRESS: '0.0.0.0:3000'
             KAFKA_TOPIC: 'events_plugin_ingestion'
@@ -420,6 +429,9 @@ services:
             args:
                 BIN: capture-logs
         restart: on-failure
+        depends_on:
+            kafka:
+                condition: service_healthy
         environment:
             BIND_HOST: '0.0.0.0'
             BIND_PORT: '4318'
