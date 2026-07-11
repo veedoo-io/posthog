@@ -24,7 +24,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - postgres-data:/var/lib/postgresql/data
             - ./data/db-backups:/db-backups
@@ -43,7 +43,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - redis7-data:/data
         deploy:
@@ -66,7 +66,7 @@ services:
             - zookeeper
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - ./posthog/idl:/idl
             - ./docker/clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
@@ -92,7 +92,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             ZOO_AUTOPURGE_PURGEINTERVAL: 1
             ZOO_AUTOPURGE_SNAPRETAINCOUNT: 3
@@ -114,7 +114,7 @@ services:
             - zookeeper
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - kafka-data:/bitnami/kafka
         deploy:
@@ -130,7 +130,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
             - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
@@ -215,7 +215,7 @@ services:
             - "8000:8000"
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - ./compose:/compose
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
@@ -302,7 +302,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
@@ -356,7 +356,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             PERSONS_DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
             BEHAVIORAL_COHORTS_DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
@@ -380,7 +380,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             SESSION_RECORDING_V2_S3_ACCESS_KEY_ID: ${SESSION_RECORDING_V2_S3_ACCESS_KEY_ID}
             SESSION_RECORDING_V2_S3_SECRET_ACCESS_KEY: ${SESSION_RECORDING_V2_S3_SECRET_ACCESS_KEY}
@@ -411,7 +411,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             ENCRYPTION_SALT_KEYS: $ENCRYPTION_SALT_KEYS
             SESSION_RECORDING_V2_S3_ACCESS_KEY_ID: ${SESSION_RECORDING_V2_S3_ACCESS_KEY_ID}
@@ -440,7 +440,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             ENCRYPTION_SALT_KEYS: $ENCRYPTION_SALT_KEYS
         depends_on:
@@ -461,7 +461,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         environment:
             LOGS_REDIS_TLS: 'false'
             CDP_REDIS_TLS: 'false'
@@ -486,7 +486,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         environment:
             LOGS_REDIS_TLS: 'false'
             CDP_REDIS_TLS: 'false'
@@ -511,7 +511,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         environment:
             AI_S3_BUCKET: ${OBJECT_STORAGE_BUCKET}
             AI_S3_PREFIX: 'posthog/llma/'
@@ -545,7 +545,7 @@ services:
             - "traefik.http.routers.posthog-http.middlewares=redirect-to-https@file"
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - caddy-data:/data
             - caddy-config:/config
@@ -567,7 +567,7 @@ services:
         restart: on-failure
         networks:
             - default
-            
+            - dokploy-network
         environment:
             MINIO_ROOT_USER: object_storage_root_user
             MINIO_ROOT_PASSWORD: object_storage_root_password
@@ -593,7 +593,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         command: ['server', '-s3', '-s3.port=8333', '-ip=0.0.0.0', '-master.port=9333', '-dir=/data']
         ports:
             - '8333:8333' # S3 API
@@ -625,7 +625,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             SITE_URL: https://$DOMAIN
             SECRET_KEY: $POSTHOG_SECRET
@@ -644,7 +644,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         environment:
             - ENABLE_ES=false
         ports:
@@ -659,8 +659,6 @@ services:
         extends:
             file: docker-compose.base.yml
             service: elasticsearch
-        ports:
-            - '9299:9200'
         logging: *default-logging
         networks:
             - default
@@ -676,7 +674,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         depends_on:
             - temporal
         deploy:
@@ -691,7 +689,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         ports:
             - 8081:8080
         depends_on:
@@ -712,7 +710,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - ./compose:/compose
         image: $REGISTRY_URL:$POSTHOG_APP_TAG
@@ -750,7 +748,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             TOKEN: ${BROWSERLESS_SECRET:-$POSTHOG_SECRET}
         deploy:
@@ -769,7 +767,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - ./compose:/compose
             - ./ee/hogai/core/agent_modes/executables.py:/code/ee/hogai/core/agent_modes/executables.py
@@ -825,7 +823,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
             KAFKA_HOSTS: 'kafka:9092'
@@ -849,7 +847,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         deploy:
             resources:
                 limits:
@@ -865,7 +863,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         deploy:
             resources:
                 limits:
@@ -880,7 +878,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         depends_on:
             kafka-init:
                 condition: service_completed_successfully
@@ -898,7 +896,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             - LIVESTREAM_JWT_SECRET=${POSTHOG_SECRET}
         volumes:
@@ -917,7 +915,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         environment:
             PRIMARY_DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
         depends_on:
@@ -937,7 +935,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         depends_on:
             - personhog-replica
         deploy:
@@ -955,7 +953,7 @@ services:
         restart: unless-stopped
         networks:
             - default
-            
+            - dokploy-network
         environment:
             SECRET_KEY: ${POSTHOG_SECRET}
             AWS_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY_ID}
@@ -986,7 +984,7 @@ services:
             - "3002:3002"
         networks:
             - default
-            
+            - dokploy-network
         environment:
             AWS_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY_ID}
             AWS_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY}
@@ -1009,7 +1007,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         command:
             - -c
             - |
@@ -1084,7 +1082,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         volumes:
             - ./share:/share
         environment:
@@ -1125,7 +1123,7 @@ services:
         logging: *default-logging
         networks:
             - default
-            
+            - dokploy-network
         ports:
             - '${SFTP_PORT:-2222}:22'
         volumes:
