@@ -659,6 +659,8 @@ services:
         extends:
             file: docker-compose.base.yml
             service: elasticsearch
+        ports:
+            - '9201:9200'
         logging: *default-logging
         networks:
             - default
