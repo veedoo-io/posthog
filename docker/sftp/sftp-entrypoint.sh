@@ -16,7 +16,7 @@ for dir in $DIRS; do
     # Якщо SFTP_USER != sftp_user, то дані будуть в /home/sftp_user/, а користувач в /home/$SFTP_USER/
     # Тому краще перевіряти обидва шляхи або використовувати фіксований шлях для монтування.
     
-    PATH_TO_DIR="/home/sftp_user/${dir}"
+    PATH_TO_DIR="/home/${SFTP_USER}/${dir}"
     if [ ! -d "$PATH_TO_DIR" ]; then
         PATH_TO_DIR="/home/${SFTP_USER}/${dir}"
     fi
