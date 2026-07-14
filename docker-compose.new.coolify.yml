@@ -987,11 +987,19 @@ services:
             - kafka-data:/home/sftp_user/kafka-data:rw
             - ./data/db-backups:/home/sftp_user/db-backups:rw
             - ./data/clickhouse-backups:/home/sftp_user/clickhouse-backups:rw
-            - ./docker/sftp/sftp-entrypoint.sh:/usr/local/bin/sftp-entrypoint.sh:ro
         environment:
             - SFTP_USERS=${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
         restart: unless-stopped
-        entrypoint: /usr/local/bin/sftp-entrypoint.sh
+        entrypoint: |
+            sh -c "
+            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data db-backups clickhouse-backups; do
+              if [ -d /home/sftp_user/$dir ]; then
+                chown -R 1001:1001 /home/sftp_user/$dir &&
+                chmod -R 777 /home/sftp_user/$dir;
+              fi
+            done &&
+            /entrypoint ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
+            "
         command: ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
 
 networks:
