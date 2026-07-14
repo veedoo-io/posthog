@@ -22,6 +22,13 @@ if pg_dumpall -U posthog | gzip > "$BACKUP_FILE"; then
     if [ "$SIZE" -lt 1024 ]; then
         echo "⚠️ Warning: Backup file is very small ($SIZE bytes). It might be empty or corrupted."
     fi
+
+    # Перевірка на наявність даних (шукаємо ознаки INSERT або COPY)
+    if zgrep -qE "COPY|INSERT INTO" "$BACKUP_FILE"; then
+        echo "✅ Data found in backup."
+    else
+        echo "⚠️ Warning: No COPY or INSERT statements found in backup. It might contain only schema!"
+    fi
 else
     echo "❌ Backup failed!"
     rm -f "$BACKUP_FILE"
