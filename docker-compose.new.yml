@@ -188,7 +188,7 @@ services:
         restart: unless-stopped
         logging: *default-logging
         ports:
-            - "8000:8000"
+            - "80:8000"
         networks:
             - default
             - dokploy-network
