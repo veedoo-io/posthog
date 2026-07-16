@@ -198,7 +198,6 @@ services:
             - ./ee/hogai/research_agent/executables.py:/code/ee/hogai/research_agent/executables.py
             - ./ee/settings.py:/code/ee/settings.py
             - ./posthog/temporal/ai/anomaly_investigation/runner.py:/code/posthog/temporal/ai/anomaly_investigation/runner.py
-            - ./posthog/temporal/data_imports/signals/pipeline.py:/code/posthog/temporal/data_imports/signals/pipeline.py
             - ./products/ai_observability/backend/llm/providers/anthropic.py:/code/products/ai_observability/backend/llm/providers/anthropic.py
             - ./products/signals/backend/temporal/llm.py:/code/products/signals/backend/temporal/llm.py
             - ./products/signals/eval/llm_gen/client.py:/code/products/signals/eval/llm_gen/client.py
