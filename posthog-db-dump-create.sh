@@ -12,9 +12,12 @@ mkdir -p "$BACKUP_DIR"
 
 echo "Started backup inside container at $(date)"
 
-# Створення дампу напряму через pg_dumpall
-# Оскільки скрипт працює в контейнері db, ми просто викликаємо утиліту
-if pg_dumpall -U posthog | gzip > "$BACKUP_FILE"; then
+# Створення дампу напряму через pg_dump
+# Використовуємо --data-only для того, щоб не створювати таблиці (тільки дані)
+# --disable-triggers допомагає уникнути проблем із циклічними зовнішніми ключами при відновленні
+# --no-owner та --no-privileges допомагають при відновленні в інші середовища
+# Ми ігноруємо stderr (2>/dev/null), щоб приховати численні попередження про циклічні ключі, які є нормальними для PostHog
+if pg_dump -U posthog -d posthog --data-only --disable-triggers --no-owner --no-privileges 2>/dev/null | gzip > "$BACKUP_FILE"; then
     echo "✅ Backup created: $BACKUP_FILE"
     
     # Перевірка розміру (мінімум 1 КБ)
