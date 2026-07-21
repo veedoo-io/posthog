@@ -31,7 +31,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 1536M
+                    memory: 500M
 
     redis7:
         extends:
@@ -47,7 +47,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 128M
 
     clickhouse:
         #
@@ -80,7 +80,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 4096M
+                    memory: 2048M
 
     zookeeper:
         extends:
@@ -101,7 +101,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 300M
     kafka:
         extends:
             file: docker-compose.base.yml
@@ -118,7 +118,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 1536M
+                    memory: 1224M
 
     worker:
         extends:
@@ -200,7 +200,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 768M
+                    memory: 6500M
     web:
         extends:
             file: docker-compose.base.yml
@@ -284,7 +284,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 768M
+                    memory: 3500M
 
     plugins:
         extends:
@@ -336,7 +336,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 768M
+                    memory: 320M
 
     ingestion-general:
         extends:
@@ -360,7 +360,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 384M
+                    memory: 256M
 
     ingestion-sessionreplay:
         extends:
@@ -390,7 +390,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 384M
+                    memory: 256M
 
     recording-api:
         extends:
@@ -420,7 +420,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 192M
+                    memory: 256M
 
     ingestion-error-tracking:
         extends:
@@ -440,7 +440,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 192M
+                    memory: 256M
 
     ingestion-logs:
         extends:
@@ -465,7 +465,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 192M
+                    memory: 256M
 
     ingestion-traces:
         extends:
@@ -491,7 +491,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 192M
+                    memory: 256M
 
     capture-ai:
         extends:
@@ -517,7 +517,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 192M
+                    memory: 64M
 
     proxy:
         extends:
@@ -525,7 +525,7 @@ services:
             service: proxy
         logging: *default-logging
         ports:
-            - '80:80'
+            - '8000:80'
             - '443:443'
         networks:
             - default
@@ -542,7 +542,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
     asyncmigrationscheck:
         extends:
             file: docker-compose.base.yml
@@ -559,7 +559,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 64M
 
     # Temporal containers
     temporal:
@@ -580,7 +580,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 400M
     elasticsearch:
         extends:
             file: docker-compose.base.yml
@@ -592,7 +592,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 384M
+                    memory: 512M
     temporal-admin-tools:
         extends:
             file: docker-compose.base.yml
@@ -607,7 +607,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
     temporal-ui:
         extends:
             file: docker-compose.base.yml
@@ -627,7 +627,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
     temporal-django-worker:
         command: /compose/temporal-django-worker
         extends:
@@ -664,7 +664,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 384M
+                    memory: 1024M
 
     browserless:
         # Renders image exports and heatmap screenshots (no browser ships in the PostHog image).
@@ -679,7 +679,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 256M
 
     # Max AI worker - requires OPENAI_API_KEY to be set
     # ANTHROPIC_API_KEY is optional (only for /ticket command)
@@ -734,30 +734,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 384M
-
-    cyclotron-janitor:
-        extends:
-            file: docker-compose.base.yml
-            service: cyclotron-janitor
-        build:
-            context: ./rust
-        logging: *default-logging
-        networks:
-            - default
-            - dokploy-network
-        environment:
-            DATABASE_URL: 'postgres://posthog:posthog@db:5432/posthog'
-            KAFKA_HOSTS: 'kafka:9092'
-        depends_on:
-            db:
-                condition: service_healthy
-            kafka:
-                condition: service_started
-        deploy:
-            resources:
-                limits:
-                    memory: 128M
+                    memory: 1024M
 
     capture:
         build:
@@ -773,7 +750,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
     replay-capture:
         build:
@@ -789,7 +766,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
     property-defs-rs:
         build:
             context: ./rust
@@ -809,7 +786,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
     livestream:
         extends:
@@ -826,7 +803,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
     personhog-replica:
         build:
@@ -846,7 +823,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
     personhog-router:
         build:
@@ -863,7 +840,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
     feature-flags:
         build:
@@ -921,7 +898,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
     kafka-init:
         image: docker.redpanda.com/redpandadata/redpanda:v25.1.9
@@ -992,7 +969,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 256M
 
     cymbal:
         image: ghcr.io/posthog/posthog/cymbal:master
@@ -1035,7 +1012,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
     sftp:
         image: atmoz/sftp:latest
@@ -1057,8 +1034,8 @@ services:
         entrypoint: |
             sh -c "
             for dir in clickhouse-data kafka-data db-backups; do
-              chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$dir &&
-              chmod -R 777 /home/${SFTP_USER:-sftp_user}/$dir;
+              chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$$dir &&
+              chmod -R 777 /home/${SFTP_USER:-sftp_user}/$$dir;
             done &&
             chmod -R 777 /home/${SFTP_USER:-sftp_user}/clickhouse-backups &&
             /entrypoint ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
@@ -1067,7 +1044,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 128M
+                    memory: 64M
 
 networks:
     default:
