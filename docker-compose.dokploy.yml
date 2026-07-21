@@ -277,8 +277,6 @@ services:
             - redis7
             - clickhouse
             - kafka
-            - objectstorage
-            - seaweedfs
             - personhog-router
             - browserless
         deploy:
@@ -333,8 +331,6 @@ services:
             - redis7
             - clickhouse
             - kafka
-            - objectstorage
-            - seaweedfs
         deploy:
             resources:
                 limits:
@@ -389,7 +385,6 @@ services:
             - db
             - redis7
             - kafka
-            - seaweedfs
         deploy:
             resources:
                 limits:
@@ -546,64 +541,6 @@ services:
             resources:
                 limits:
                     memory: 128M
-    objectstorage:
-        # Transitional legacy MinIO source for hobby migrations.
-        # Dev/CI stacks use SeaweedFS-backed objectstorage from docker-compose.base.yml,
-        # but hobby keeps MinIO so bin/migrate-storage-hobby still has a MinIO source.
-        image: minio/minio:RELEASE.2025-04-22T22-12-26Z
-        restart: on-failure
-        networks:
-            - default
-            - dokploy-network
-        environment:
-            MINIO_ROOT_USER: object_storage_root_user
-            MINIO_ROOT_PASSWORD: object_storage_root_password
-        entrypoint: sh
-        command: -c 'mkdir -p /data/posthog /data/ducklake-dev /data/ai-blobs && minio server --address ":19000" --console-address ":19001" /data'
-        logging: *default-logging
-        volumes:
-            - objectstorage:/data
-        ports:
-            - '19000:19000'
-            - '19001:19001'
-        deploy:
-            resources:
-                limits:
-                    memory: 256M
-
-    seaweedfs:
-        extends:
-            file: docker-compose.base.yml
-            service: seaweedfs
-        container_name: '${SEAWEEDFS_DOCKER_NAME:-seaweedfs-main}'
-        restart: on-failure
-        logging: *default-logging
-        networks:
-            - default
-            - dokploy-network
-        command: ['server', '-s3', '-s3.port=8333', '-ip=0.0.0.0', '-master.port=9333', '-dir=/data']
-        ports:
-            - '8333:8333' # S3 API
-            - '9333:9333' # Master server
-        volumes:
-            - seaweedfs:/data
-        healthcheck:
-            test:
-              [
-                  'CMD',
-                  'sh',
-                  '-c',
-                  "echo 's3.bucket.list' | /usr/bin/weed shell -master=localhost:9333 2>&1 | grep -q posthog",
-              ]
-            interval: 5s
-            timeout: 10s
-            retries: 30
-            start_period: 10s
-        deploy:
-            resources:
-                limits:
-                    memory: 256M
-
     asyncmigrationscheck:
         extends:
             file: docker-compose.base.yml
@@ -720,8 +657,6 @@ services:
             - redis7
             - clickhouse
             - kafka
-            - objectstorage
-            - seaweedfs
             - temporal
             - browserless
         deploy:
@@ -792,8 +727,6 @@ services:
             - redis7
             - clickhouse
             - kafka
-            - objectstorage
-            - seaweedfs
             - temporal
             - browserless
         deploy:
@@ -1093,8 +1026,6 @@ services:
         depends_on:
             kafka-init:
                 condition: service_completed_successfully
-            seaweedfs:
-                condition: service_healthy
             db:
                 condition: service_healthy
             redis7:
@@ -1114,8 +1045,6 @@ services:
         ports:
             - '${SFTP_PORT:-2222}:22'
         volumes:
-            - objectstorage:/home/${SFTP_USER:-sftp_user}/objectstorage:rw
-            - seaweedfs:/home/${SFTP_USER:-sftp_user}/seaweedfs:rw
             - postgres-data:/home/${SFTP_USER:-sftp_user}/postgres-data:rw
             - clickhouse-data:/home/${SFTP_USER:-sftp_user}/clickhouse-data:rw
             - kafka-data:/home/${SFTP_USER:-sftp_user}/kafka-data:rw
@@ -1126,7 +1055,7 @@ services:
         restart: unless-stopped
         entrypoint: |
             sh -c "
-            for dir in objectstorage seaweedfs postgres-data clickhouse-data kafka-data db-backups; do
+            for dir in postgres-data clickhouse-data kafka-data db-backups; do
               chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$dir &&
               chmod -R 777 /home/${SFTP_USER:-sftp_user}/$dir;
             done &&
@@ -1147,8 +1076,6 @@ volumes:
     zookeeper-data:
     zookeeper-datalog:
     zookeeper-logs:
-    objectstorage:
-    seaweedfs:
     postgres-data:
     clickhouse-data:
     caddy-data:
