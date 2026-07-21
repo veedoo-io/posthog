@@ -26,10 +26,12 @@ services:
             - ./data/db-backups:/db-backups
             - ./posthog-db-dump-create.sh:/usr/local/bin/posthog-db-dump-create.sh
             - ./commands:/usr/local/bin/commands
+        environment:
+            - PGDATA=/var/lib/postgresql/data/pgdata
         deploy:
             resources:
                 limits:
-                    memory: 768M
+                    memory: 1536M
 
     redis7:
         extends:
@@ -116,7 +118,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 2048M
+                    memory: 1536M
 
     worker:
         extends:
@@ -358,7 +360,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 384M
 
     ingestion-sessionreplay:
         extends:
@@ -388,7 +390,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 384M
 
     recording-api:
         extends:
@@ -418,7 +420,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 192M
 
     ingestion-error-tracking:
         extends:
@@ -438,7 +440,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 192M
 
     ingestion-logs:
         extends:
@@ -463,7 +465,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 192M
 
     ingestion-traces:
         extends:
@@ -489,7 +491,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 192M
 
     capture-ai:
         extends:
@@ -515,7 +517,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 192M
 
     proxy:
         extends:
@@ -590,7 +592,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 384M
     temporal-admin-tools:
         extends:
             file: docker-compose.base.yml
@@ -662,7 +664,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 384M
 
     browserless:
         # Renders image exports and heatmap screenshots (no browser ships in the PostHog image).
@@ -732,7 +734,7 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 384M
 
     cyclotron-janitor:
         extends:
@@ -1045,7 +1047,6 @@ services:
         ports:
             - '${SFTP_PORT:-2222}:22'
         volumes:
-            - postgres-data:/home/${SFTP_USER:-sftp_user}/postgres-data:rw
             - clickhouse-data:/home/${SFTP_USER:-sftp_user}/clickhouse-data:rw
             - kafka-data:/home/${SFTP_USER:-sftp_user}/kafka-data:rw
             - ./data/db-backups:/home/${SFTP_USER:-sftp_user}/db-backups:rw
@@ -1055,7 +1056,7 @@ services:
         restart: unless-stopped
         entrypoint: |
             sh -c "
-            for dir in postgres-data clickhouse-data kafka-data db-backups; do
+            for dir in clickhouse-data kafka-data db-backups; do
               chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$dir &&
               chmod -R 777 /home/${SFTP_USER:-sftp_user}/$dir;
             done &&
