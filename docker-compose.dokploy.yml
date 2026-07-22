@@ -1033,12 +1033,14 @@ services:
         restart: unless-stopped
         entrypoint: |
             sh -c "
-            for dir in clickhouse-data kafka-data db-backups; do
+            chown root:root /home && chmod 755 /home &&
+            chown root:root /home/${SFTP_USER:-sftp_user} && chmod 755 /home/${SFTP_USER:-sftp_user} &&
+            for dir in clickhouse-data kafka-data db-backups clickhouse-backups; do
+              mkdir -p /home/${SFTP_USER:-sftp_user}/$$dir &&
               chown -R 1001:1001 /home/${SFTP_USER:-sftp_user}/$$dir &&
-              chmod -R 777 /home/${SFTP_USER:-sftp_user}/$$dir;
+              chmod -R 700 /home/${SFTP_USER:-sftp_user}/$$dir;
             done &&
-            chmod -R 777 /home/${SFTP_USER:-sftp_user}/clickhouse-backups &&
-            /entrypoint ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
+            exec /entrypoint \"${SFTP_USER:-sftp_user}\":\"${SFTP_PASSWORD:-password}\":1001
             "
         command: ${SFTP_USER:-sftp_user}:${SFTP_PASSWORD:-password}:1001
         deploy:
