@@ -526,7 +526,7 @@ services:
         logging: *default-logging
         ports:
             - '8000:80'
-            - '443:443'
+            - '444:443'
         networks:
             - default
             - dokploy-network
